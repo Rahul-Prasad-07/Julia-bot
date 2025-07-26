@@ -111,12 +111,24 @@ function process_agent_webhook(req::HTTP.Request, agent_id::String; request_body
     end
     if agent.trigger.type == Agents.CommonTypes.WEBHOOK_TRIGGER
         try
-            if isempty(request_body)
+            result = if isempty(request_body)
                 Agents.run(agent)
             else
                 Agents.run(agent, request_body)
             end
-            return HTTP.Response(200)
+            
+            # Return the actual result from the agent strategy
+            if result !== nothing
+                # If result is a string, return as plain text
+                if isa(result, String)
+                    return HTTP.Response(200, ["Content-Type" => "text/plain"], result)
+                else
+                    # If result is a complex object, return as JSON
+                    return HTTP.Response(200, ["Content-Type" => "application/json"], JSON3.write(result))
+                end
+            else
+                return HTTP.Response(200, ["Content-Type" => "text/plain"], "Task completed successfully.")
+            end
         catch e
             if isa(e, Errors.InvalidPayload)
                 return HTTP.Response(400,
@@ -166,12 +178,39 @@ function list_tools(req::HTTP.Request;)::Vector{ToolSummary}
     return tools
 end
 
+# CORS middleware function
+function cors_handler(handler)
+    return function(req::HTTP.Request)
+        # Handle preflight requests
+        if req.method == "OPTIONS"
+            return HTTP.Response(200, 
+                ["Access-Control-Allow-Origin" => "*",
+                 "Access-Control-Allow-Methods" => "GET, POST, PUT, DELETE, OPTIONS",
+                 "Access-Control-Allow-Headers" => "Content-Type, Authorization",
+                 "Access-Control-Max-Age" => "86400"])
+        end
+        
+        # Process the actual request
+        response = handler(req)
+        
+        # Add CORS headers to all responses
+        HTTP.setheader(response, "Access-Control-Allow-Origin" => "*")
+        HTTP.setheader(response, "Access-Control-Allow-Methods" => "GET, POST, PUT, DELETE, OPTIONS")
+        HTTP.setheader(response, "Access-Control-Allow-Headers" => "Content-Type, Authorization")
+        
+        return response
+    end
+end
+
 function run_server(host::AbstractString="0.0.0.0", port::Integer=8052)
     try
         router = HTTP.Router()
         router = JuliaOSServer.register(router, @__MODULE__; path_prefix="/api/v1")
         HTTP.register!(router, "GET", "/ping", ping)
-        server[] = HTTP.serve!(router, host, port)
+        
+        # Apply CORS middleware
+        server[] = HTTP.serve!(cors_handler(router), host, port)
+        @info "Server started with CORS support on http://$(host):$(port)"
         wait(server[])
     catch ex
         @error("Server error", exception=(ex, catch_backtrace()))

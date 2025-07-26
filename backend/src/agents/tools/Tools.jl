@@ -12,6 +12,10 @@ include("telegram/tool_detect_swearing.jl")
 include("telegram/tool_send_message.jl")
 include("tool_scrape_article_text.jl")
 include("tool_summarize_for_post.jl")
+include("tool_solana_knowledge.jl")
+include("tool_solana_code_gen.jl")
+include("tool_solana_ecosystem.jl")
+include("tool_solana_knowledge_multi_model.jl")
 
 using ..CommonTypes: ToolSpecification
 
@@ -37,5 +41,9 @@ register_tool(TOOL_DETECT_SWEAR_SPECIFICATION)
 register_tool(TOOL_SEND_MESSAGE_SPECIFICATION)
 register_tool(TOOL_SCRAPE_ARTICLE_TEXT_SPECIFICATION)
 register_tool(TOOL_SUMMARIZE_FOR_POST_SPECIFICATION)
+register_tool(TOOL_SOLANA_KNOWLEDGE_SPECIFICATION)
+register_tool(TOOL_SOLANA_CODE_GEN_SPECIFICATION)
+register_tool(TOOL_SOLANA_ECOSYSTEM_SPECIFICATION)
+register_tool(TOOL_SOLANA_KNOWLEDGE_MULTI_MODEL_SPECIFICATION)
 
 end

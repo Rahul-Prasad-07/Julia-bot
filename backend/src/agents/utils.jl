@@ -83,7 +83,51 @@ end
 Same, but as a compact JSON string.
 """
 function input_type_json(agent::CommonTypes.Agent)
-    isnothing(agent.strategy.input_type) ? Dict{String, Any}() : JSONSchemaGenerator.schema(agent.strategy.input_type)
+    if isnothing(agent.strategy.input_type)
+        return Dict{String, Any}()
+    end
+    
+    # Get the input type name first to check if we need fallback handling
+    input_type_name = string(agent.strategy.input_type)
+    
+    # For known problematic types, skip JSONSchemaGenerator and use fallback directly
+    if occursin("SolanaSwarmDevInput", input_type_name)
+        return Dict{String, Any}(
+            "type" => "object",
+            "properties" => Dict{String, Any}(
+                "task" => Dict("type" => "string", "description" => "The Solana development task to execute"),
+                "project_context" => Dict("type" => "object", "description" => "Project context and requirements"),
+                "priority" => Dict("type" => "string", "enum" => ["low", "normal", "high", "critical"], "default" => "normal"),
+                "requires_coordination" => Dict("type" => "boolean", "default" => true, "description" => "Whether this task requires multi-agent coordination")
+            ),
+            "required" => ["task"]
+        )
+    elseif occursin("SolanaDevChatInput", input_type_name)
+        return Dict{String, Any}(
+            "type" => "object",
+            "properties" => Dict{String, Any}(
+                "message" => Dict("type" => "string", "description" => "The user message or question"),
+                "user_id" => Dict("type" => "string", "default" => "default_user", "description" => "User identifier"),
+                "chat_type" => Dict("type" => "string", "enum" => ["general", "code_gen", "ecosystem", "debug"], "default" => "general")
+            ),
+            "required" => ["message"]
+        )
+    else
+        # Try JSONSchemaGenerator for other types, with fallback
+        try
+            return JSONSchemaGenerator.schema(agent.strategy.input_type)
+        catch e
+            @warn "Failed to generate JSON schema for agent $(agent.id) input type $(agent.strategy.input_type): $e"
+            # Generic fallback schema
+            return Dict{String, Any}(
+                "type" => "object",
+                "properties" => Dict{String, Any}(
+                    "input" => Dict("type" => "string", "description" => "Generic input field")
+                ),
+                "required" => ["input"]
+            )
+        end
+    end
 end
 
 const NAME_TO_TRIGGER_TYPE = Dict(v => k for (k, v) in TRIGGER_TYPE_NAMES)

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solana Development Swarm - JuliaOS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .swarm-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+
+        .status-dot.active {
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            height: 700px;
+        }
+
+        .task-area {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-input-section {
+            margin-bottom: 30px;
+        }
+
+        .task-input-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .task-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .task-textarea:focus {
+            outline: none;
+            border-color: #9945FF;
+        }
+
+        .task-options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .option-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .select-input {
+            padding: 8px 12px;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .submit-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-area {
+            flex: 1;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h3 {
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .clear-btn {
+            padding: 8px 15px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .task-result {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #9945FF;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-result.processing {
+            border-left-color: #ffc107;
+        }
+
+        .task-result.completed {
+            border-left-color: #28a745;
+        }
+
+        .task-result.error {
+            border-left-color: #dc3545;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .task-content {
+            color: #444;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .agents-panel {
+            background: #f8f9fa;
+            border-left: 1px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .agents-header {
+            margin-bottom: 20px;
+        }
+
+        .agents-header h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .agent-card:hover {
+            border-color: #9945FF;
+            box-shadow: 0 4px 12px rgba(153, 69, 255, 0.1);
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .agent-status {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .agent-status.running {
+            background: #d1edff;
+            color: #0066cc;
+        }
+
+        .agent-status.idle {
+            background: #e7f3e7;
+            color: #28a745;
+        }
+
+        .agent-status.busy {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .agent-role {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .agent-capabilities {
+            font-size: 0.85em;
+            color: #777;
+        }
+
+        .coordination-flow {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .step-number {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+
+        .step-number.active {
+            background: #9945FF;
+            color: white;
+        }
+
+        .step-number.completed {
+            background: #28a745;
+            color: white;
+        }
+
+        .examples-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .examples-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .example-task {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .example-task:hover {
+            border-color: #14F195;
+            background: #f0fff8;
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .example-desc {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .spinner-large {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #9945FF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .agents-panel {
+                border-left: none;
+                border-top: 1px solid #e9ecef;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="swarm-status">
+                <div class="status-dot" id="swarmStatusDot"></div>
+                <span id="swarmStatusText">Initializing...</span>
+            </div>
+            <h1>🐝 Solana Development Swarm</h1>
+            <p>Multi-Agent Coordination for Complex Solana Development Tasks</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="task-area">
+                <div class="task-input-section">
+                    <h3>🎯 Submit Development Task</h3>
+                    <div class="task-form">
+                        <textarea 
+                            class="task-textarea" 
+                            id="taskInput" 
+                            placeholder="Describe your complex Solana development task. The swarm will coordinate multiple specialists to provide comprehensive solutions..."
+                        ></textarea>
+                        
+                        <div class="task-options">
+                            <div class="option-group">
+                                <label>Priority Level</label>
+                                <select class="select-input" id="prioritySelect">
+                                    <option value="normal">Normal</option>
+                                    <option value="high">High</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label>Complexity</label>
+                                <select class="select-input" id="complexitySelect">
+                                    <option value="simple">Simple (Single Agent)</option>
+                                    <option value="moderate">Moderate</option>
+                                    <option value="complex" selected>Complex (Full Coordination)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="requiresCoordination" checked>
+                                <label for="requiresCoordination">Requires Multi-Agent Coordination</label>
+                            </div>
+                        </div>
+                        
+                        <button class="submit-btn" id="submitTaskBtn">🚀 Execute Swarm Task</button>
+                    </div>
+                </div>
+                
+                <div class="results-area">
+                    <div class="results-header">
+                        <h3>📊 Task Results</h3>
+                        <button class="clear-btn" id="clearResultsBtn">Clear All</button>
+                    </div>
+                    <div id="taskResults">
+                        <div class="task-result">
+                            <div class="task-title">Welcome to Solana Development Swarm!</div>
+                            <div class="task-content">Your swarm of AI agents is ready to tackle complex Solana development challenges. Submit a task above to see multi-agent coordination in action.
+
+Examples of complex tasks:
+• Build a complete DeFi yield farming protocol
+• Create an NFT marketplace with advanced features  
+• Develop a multi-signature wallet with governance
+• Design a cross-chain bridge integration
+• Implement a sophisticated trading bot with risk management</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="agents-panel">
+                <div class="agents-header">
+                    <h3>🤖 Agent Swarm</h3>
+                    <p style="color: #666; font-size: 0.9em;">Specialized AI agents working in coordination</p>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-name">🎯 Coordinator</div>
+                        <div class="agent-status idle" id="coordinatorStatus">Idle</div>
+                    </div>
+                    <div class="agent-role">Task decomposition and orchestration</div>
+                    <div class="agent-capabilities">Breaks down complex tasks, coordinates specialists, synthesizes results</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-name">💻 Code Specialist</div>
+                        <div class="agent-status idle" id="codeStatus">Idle</div>
+                    </div>
+                    <div class="agent-role">Smart contract development</div>
+                    <div class="agent-capabilities">Anchor programs, client-side code, testing frameworks</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-name">🌐 Ecosystem Expert</div>
+                        <div class="agent-status idle" id="ecosystemStatus">Idle</div>
+                    </div>
+                    <div class="agent-role">DeFi protocol integration</div>
+                    <div class="agent-capabilities">Jupiter, Raydium, Orca, Metaplex, yield strategies</div>
+                </div>
+                
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-name">🔒 Security Auditor</div>
+                        <div class="agent-status idle" id="securityStatus">Idle</div>
+                    </div>
+                    <div class="agent-role">Security analysis and auditing</div>
+                    <div class="agent-capabilities">Vulnerability assessment, best practices, risk analysis</div>
+                </div>
+                
+                <div class="coordination-flow">
+                    <h4 style="color: #333; margin-bottom: 15px;">🔄 Coordination Flow</h4>
+                    <div class="flow-step">
+                        <div class="step-number" id="step1">1</div>
+                        <span>Task Analysis & Decomposition</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number" id="step2">2</div>
+                        <span>Specialist Assignment</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number" id="step3">3</div>
+                        <span>Parallel Execution</span>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number" id="step4">4</div>
+                        <span>Result Synthesis</span>
+                    </div>
+                </div>
+                
+                <div class="examples-section">
+                    <h4>💡 Example Complex Tasks</h4>
+                    <div class="example-task" data-task="Create a comprehensive DeFi yield farming protocol with Jupiter integration, including smart contracts, client interface, and security audit">
+                        <div class="example-title">DeFi Yield Farm + Jupiter</div>
+                        <div class="example-desc">Full protocol with DEX integration</div>
+                    </div>
+                    <div class="example-task" data-task="Build an NFT marketplace with royalty enforcement, escrow system, and Metaplex integration, including security analysis">
+                        <div class="example-title">NFT Marketplace Platform</div>
+                        <div class="example-desc">Complete marketplace with security</div>
+                    </div>
+                    <div class="example-task" data-task="Develop a multi-signature governance wallet with proposal system, voting mechanisms, and treasury management">
+                        <div class="example-title">DAO Governance System</div>
+                        <div class="example-desc">Multi-sig with governance features</div>
+                    </div>
+                    <div class="example-task" data-task="Create a sophisticated trading bot with risk management, multiple DEX integration, and real-time analytics">
+                        <div class="example-title">Advanced Trading Bot</div>
+                        <div class="example-desc">Multi-DEX bot with risk controls</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner-large"></div>
+            <h3 style="color: #333; margin-bottom: 10px;">Swarm Processing...</h3>
+            <p style="color: #666;">Coordinating agents to solve your task</p>
+        </div>
+    </div>
+
+    <script>
+        class SolanaSwarm {
+            constructor() {
+                this.apiUrl = 'http://127.0.0.1:8052/api/v1';
+                this.coordinatorId = 'solana-coordinator';
+                this.isInitialized = false;
+                this.taskCounter = 0;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.initializeSwarm();
+            }
+            
+            initializeElements() {
+                this.taskInput = document.getElementById('taskInput');
+                this.prioritySelect = document.getElementById('prioritySelect');
+                this.complexitySelect = document.getElementById('complexitySelect');
+                this.requiresCoordination = document.getElementById('requiresCoordination');
+                this.submitBtn = document.getElementById('submitTaskBtn');
+                this.taskResults = document.getElementById('taskResults');
+                this.clearBtn = document.getElementById('clearResultsBtn');
+                this.loadingOverlay = document.getElementById('loadingOverlay');
+                this.swarmStatusDot = document.getElementById('swarmStatusDot');
+                this.swarmStatusText = document.getElementById('swarmStatusText');
+                
+                // Agent status elements
+                this.agentStatuses = {
+                    coordinator: document.getElementById('coordinatorStatus'),
+                    code: document.getElementById('codeStatus'),
+                    ecosystem: document.getElementById('ecosystemStatus'),
+                    security: document.getElementById('securityStatus')
+                };
+                
+                // Flow steps
+                this.flowSteps = {
+                    1: document.getElementById('step1'),
+                    2: document.getElementById('step2'),
+                    3: document.getElementById('step3'),
+                    4: document.getElementById('step4')
+                };
+            }
+            
+            bindEvents() {
+                this.submitBtn.addEventListener('click', () => this.submitTask());
+                this.clearBtn.addEventListener('click', () => this.clearResults());
+                
+                // Example task clicks
+                document.querySelectorAll('.example-task').forEach(task => {
+                    task.addEventListener('click', () => {
+                        this.taskInput.value = task.dataset.task;
+                        this.taskInput.focus();
+                    });
+                });
+                
+                // Complexity change affects coordination checkbox
+                this.complexitySelect.addEventListener('change', () => {
+                    if (this.complexitySelect.value === 'simple') {
+                        this.requiresCoordination.checked = false;
+                    } else {
+                        this.requiresCoordination.checked = true;
+                    }
+                });
+            }
+            
+            async initializeSwarm() {
+                try {
+                    // Check if backend is available
+                    const response = await fetch(`${this.apiUrl}/agents`);
+                    if (response.ok) {
+                        console.log('✅ Backend connection successful');
+                        this.setSwarmStatus('active', 'Swarm Active');
+                        await this.ensureAgentsExist();
+                        
+                        // Verify all agents are working
+                        await this.verifySwarmStatus();
+                        this.isInitialized = true;
+                    } else {
+                        console.error('❌ Backend responded with error:', response.status);
+                        this.setSwarmStatus('inactive', 'Backend Error');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to initialize swarm:', error);
+                    this.setSwarmStatus('inactive', 'Connection Failed');
+                }
+            }
+            
+            async verifySwarmStatus() {
+                const agentIds = ['solana-coordinator', 'solana-code_specialist', 'solana-ecosystem_expert', 'solana-security_auditor'];
+                let runningCount = 0;
+                
+                console.log('🔍 Verifying swarm status...');
+                
+                for (const agentId of agentIds) {
+                    try {
+                        const response = await fetch(`${this.apiUrl}/agents/${agentId}`);
+                        if (response.ok) {
+                            const agentData = await response.json();
+                            console.log(`📊 ${agentId}: State = ${agentData.state}, Trigger = ${agentData.trigger_type}`);
+                            
+                            // Consider both RUNNING and CREATED states as functional
+                            if (agentData.state === 'RUNNING' || agentData.state === 'CREATED') {
+                                runningCount++;
+                                console.log(`✅ ${agentId}: FUNCTIONAL (${agentData.state})`);
+                            } else {
+                                console.warn(`⚠️ ${agentId}: ${agentData.state || 'Unknown'}`);
+                            }
+                        } else {
+                            console.error(`❌ ${agentId}: HTTP ${response.status} - ${response.statusText}`);
+                        }
+                    } catch (error) {
+                        console.error(`❌ Error checking ${agentId}:`, error);
+                    }
+                }
+                
+                console.log(`🤖 Swarm Status: ${runningCount}/${agentIds.length} agents functional`);
+                
+                if (runningCount === agentIds.length) {
+                    this.setSwarmStatus('active', 'All Agents Ready');
+                } else if (runningCount > 0) {
+                    this.setSwarmStatus('active', `${runningCount}/${agentIds.length} Agents Ready`);
+                } else {
+                    this.setSwarmStatus('inactive', 'No Agents Running');
+                }
+            }
+            
+            async ensureAgentsExist() {
+                const agents = [
+                    {
+                        id: 'solana-coordinator',
+                        name: 'Solana Development Coordinator',
+                        role: 'coordinator'
+                    },
+                    {
+                        id: 'solana-code_specialist',
+                        name: 'Solana Code Specialist',
+                        role: 'code_specialist'
+                    },
+                    {
+                        id: 'solana-ecosystem_expert',
+                        name: 'Solana Ecosystem Expert',
+                        role: 'ecosystem_expert'
+                    },
+                    {
+                        id: 'solana-security_auditor',
+                        name: 'Solana Security Auditor',
+                        role: 'security_auditor'
+                    }
+                ];
+                
+                for (const agent of agents) {
+                    try {
+                        await this.ensureAgentExists(agent);
+                    } catch (error) {
+                        console.error(`Failed to ensure agent ${agent.id} exists:`, error);
+                    }
+                }
+            }
+            
+            async ensureAgentExists(agent) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/agents/${agent.id}`);
+                    if (!response.ok) {
+                        console.log(`Agent ${agent.id} doesn't exist, creating...`);
+                        await this.createSwarmAgent(agent);
+                    } else {
+                        const agentData = await response.json();
+                        console.log(`Agent ${agent.id} exists with state: ${agentData.state}`);
+                        
+                        // Ensure agent is in RUNNING state
+                        if (agentData.state !== 'RUNNING') {
+                            console.log(`Starting agent ${agent.id}...`);
+                            await this.startAgent(agent.id);
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error checking agent ${agent.id}:`, error);
+                    // Try to create agent anyway if check fails
+                    try {
+                        await this.createSwarmAgent(agent);
+                    } catch (createError) {
+                        console.error(`Failed to create agent ${agent.id}:`, createError);
+                    }
+                }
+            }
+            
+            async createSwarmAgent(agent) {
+                // Use Groq by default for ultra-fast responses with Gemini fallback
+                const tools = [
+                    { 
+                        name: "solana_knowledge_multi_model", 
+                        config: { 
+                            ai_provider: "groq",
+                            enable_fallback: true,
+                            temperature: agent.role === 'security_auditor' ? 0.1 : 0.3,
+                            max_output_tokens: agent.role === 'code_specialist' ? 4096 : 2048
+                        }
+                    }
+                ];
+                
+                // Add specialized tools for non-security agents
+                if (agent.role !== 'security_auditor') {
+                    tools.push(
+                        { 
+                            name: "solana_code_gen", 
+                            config: { 
+                                temperature: 0.4, 
+                                max_output_tokens: 4096 
+                            }
+                        },
+                        { 
+                            name: "solana_ecosystem", 
+                            config: { 
+                                temperature: 0.2, 
+                                max_output_tokens: 3072 
+                            }
+                        }
+                    );
+                }
+                
+                const agentBlueprint = {
+                    tools: tools,
+                    strategy: {
+                        name: "solana_swarm_dev",
+                        config: {
+                            name: agent.id,
+                            agent_role: agent.role,
+                            swarm_id: "solana-dev-swarm",
+                            coordination_endpoint: this.apiUrl
+                        }
+                    },
+                    trigger: {
+                        type: "webhook",
+                        params: {}
+                    }
+                };
+                
+                try {
+                    const response = await fetch(`${this.apiUrl}/agents`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: agent.id,
+                            name: agent.name,
+                            description: `Swarm agent specialized in ${agent.role} for Solana development`,
+                            blueprint: agentBlueprint
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        // Start the agent
+                        const startResponse = await fetch(`${this.apiUrl}/agents/${agent.id}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ state: 'RUNNING' })
+                        });
+                        
+                        if (startResponse.ok) {
+                            console.log(`Agent ${agent.id} created and started successfully`);
+                        } else {
+                            const errorText = await startResponse.text();
+                            console.error(`Agent ${agent.id} created but failed to start:`, errorText);
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        console.error(`Failed to create agent ${agent.id}:`, errorText);
+                    }
+                } catch (error) {
+                    console.error(`Error creating agent ${agent.id}:`, error);
+                }
+            }
+            
+            async startAgent(agentId) {
+                try {
+                    const response = await fetch(`${this.apiUrl}/agents/${agentId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ state: 'RUNNING' })
+                    });
+                    
+                    if (response.ok) {
+                        console.log(`✅ Agent ${agentId} started successfully`);
+                    } else {
+                        const errorText = await response.text();
+                        console.error(`❌ Failed to start agent ${agentId}:`, errorText);
+                    }
+                } catch (error) {
+                    console.error(`❌ Error starting agent ${agentId}:`, error);
+                }
+            }
+            
+            setSwarmStatus(status, text) {
+                this.swarmStatusDot.classList.toggle('active', status === 'active');
+                this.swarmStatusText.textContent = text;
+                this.submitBtn.disabled = status !== 'active';
+            }
+            
+            async submitTask() {
+                const task = this.taskInput.value.trim();
+                if (!task || !this.isInitialized) return;
+                
+                this.taskCounter++;
+                const taskId = `task-${this.taskCounter}`;
+                
+                // Add task to results immediately
+                this.addTaskResult(taskId, task, 'processing');
+                
+                // Show loading
+                this.showLoading();
+                this.animateFlow();
+                
+                try {
+                    const taskData = {
+                        task: task,
+                        project_context: {
+                            source: 'web_interface',
+                            timestamp: new Date().toISOString(),
+                            complexity: this.complexitySelect.value
+                        },
+                        priority: this.prioritySelect.value,
+                        requires_coordination: this.requiresCoordination.checked
+                    };
+                    
+                    const response = await this.callCoordinator(taskData);
+                    this.hideLoading();
+                    this.updateTaskResult(taskId, response, 'completed');
+                    this.resetFlow();
+                    
+                } catch (error) {
+                    this.hideLoading();
+                    this.updateTaskResult(taskId, `Error: ${error.message}`, 'error');
+                    this.resetFlow();
+                    console.error('Task execution error:', error);
+                }
+                
+                // Clear input
+                this.taskInput.value = '';
+            }
+            
+            async callCoordinator(taskData) {
+                const response = await fetch(`${this.apiUrl}/agents/${this.coordinatorId}/webhook`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(taskData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                // Check content type to determine how to parse response
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return await response.json();
+                } else {
+                    return await response.text();
+                }
+            }
+            
+            addTaskResult(taskId, task, status) {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = `task-result ${status}`;
+                resultDiv.id = taskId;
+                
+                const priority = this.prioritySelect.value;
+                const complexity = this.complexitySelect.value;
+                const coordination = this.requiresCoordination.checked ? 'Yes' : 'No';
+                
+                resultDiv.innerHTML = `
+                    <div class="task-title">Task ${this.taskCounter}: ${task.substring(0, 60)}${task.length > 60 ? '...' : ''}</div>
+                    <div class="task-meta">
+                        <span>Priority: ${priority.toUpperCase()}</span>
+                        <span>Complexity: ${complexity.toUpperCase()}</span>
+                        <span>Coordination: ${coordination}</span>
+                        <span>Status: ${status.toUpperCase()}</span>
+                    </div>
+                    <div class="task-content" id="${taskId}-content">
+                        ${status === 'processing' ? 'Processing task with swarm coordination...' : ''}
+                    </div>
+                `;
+                
+                // Insert at the beginning (after welcome message if present)
+                const firstResult = this.taskResults.children[0];
+                if (firstResult && firstResult.querySelector('.task-title').textContent.includes('Welcome')) {
+                    this.taskResults.insertBefore(resultDiv, firstResult.nextSibling);
+                } else {
+                    this.taskResults.insertBefore(resultDiv, this.taskResults.firstChild);
+                }
+            }
+            
+            updateTaskResult(taskId, content, status) {
+                const taskElement = document.getElementById(taskId);
+                if (taskElement) {
+                    taskElement.className = `task-result ${status}`;
+                    const contentElement = document.getElementById(`${taskId}-content`);
+                    if (contentElement) {
+                        contentElement.textContent = content;
+                    }
+                    // Update status in meta
+                    const metaElement = taskElement.querySelector('.task-meta');
+                    if (metaElement) {
+                        metaElement.innerHTML = metaElement.innerHTML.replace(/Status: \\w+/, `Status: ${status.toUpperCase()}`);
+                    }
+                }
+            }
+            
+            animateFlow() {
+                // Reset all steps
+                Object.values(this.flowSteps).forEach(step => {
+                    step.className = 'step-number';
+                });
+                
+                // Animate steps with delays
+                setTimeout(() => this.flowSteps[1].className = 'step-number active', 500);
+                setTimeout(() => {
+                    this.flowSteps[1].className = 'step-number completed';
+                    this.flowSteps[2].className = 'step-number active';
+                }, 1500);
+                setTimeout(() => {
+                    this.flowSteps[2].className = 'step-number completed';
+                    this.flowSteps[3].className = 'step-number active';
+                    this.setAgentStatus('code', 'busy');
+                    this.setAgentStatus('ecosystem', 'busy');
+                    this.setAgentStatus('security', 'busy');
+                }, 2500);
+                setTimeout(() => {
+                    this.flowSteps[3].className = 'step-number completed';
+                    this.flowSteps[4].className = 'step-number active';
+                }, 4000);
+            }
+            
+            resetFlow() {
+                setTimeout(() => {
+                    Object.values(this.flowSteps).forEach(step => {
+                        step.className = 'step-number';
+                    });
+                    Object.keys(this.agentStatuses).forEach(agent => {
+                        this.setAgentStatus(agent, 'idle');
+                    });
+                }, 1000);
+            }
+            
+            setAgentStatus(agent, status) {
+                const statusElement = this.agentStatuses[agent];
+                if (statusElement) {
+                    statusElement.className = `agent-status ${status}`;
+                    statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+                }
+            }
+            
+            showLoading() {
+                this.loadingOverlay.style.display = 'flex';
+                this.setAgentStatus('coordinator', 'busy');
+            }
+            
+            hideLoading() {
+                this.loadingOverlay.style.display = 'none';
+            }
+            
+            clearResults() {
+                // Keep only the welcome message
+                const welcome = this.taskResults.querySelector('.task-result');
+                this.taskResults.innerHTML = '';
+                this.taskResults.appendChild(welcome);
+                this.taskCounter = 0;
+            }
+        }
+        
+        // Initialize the swarm when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new SolanaSwarm();
+        });
+    </script>
+</body>
+</html>
