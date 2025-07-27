@@ -13,50 +13,61 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0f172a;
             min-height: 100vh;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            color: #e2e8f0;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            height: 100vh;
+            background: #0f172a;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
-            padding: 30px;
-            text-align: center;
-            color: white;
-            position: relative;
+            background: #1e293b;
+            padding: 20px 30px;
+            border-bottom: 1px solid #334155;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-size: 1.5em;
+            margin: 0;
+            font-weight: 600;
+            color: #f1f5f9;
         }
 
         .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 0.9em;
+            opacity: 0.7;
+            color: #94a3b8;
+            margin: 0;
         }
 
         .swarm-status {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255,255,255,0.2);
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            border: 1px solid #334155;
         }
 
         .status-dot {
@@ -79,24 +90,37 @@
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 400px;
-            height: 700px;
+            grid-template-columns: 400px 1fr;
+            height: calc(100vh - 80px);
+            gap: 0;
+            flex: 1;
+            overflow: hidden;
         }
 
         .task-area {
-            padding: 30px;
+            padding: 25px;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            background: #1e293b;
+            border-right: 1px solid #334155;
         }
 
         .task-input-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+            background: #0f172a;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #334155;
         }
 
         .task-input-section h3 {
-            color: #333;
+            color: #f1f5f9;
             margin-bottom: 15px;
-            font-size: 1.3em;
+            font-size: 1.2em;
+            font-weight: 600;
         }
 
         .task-form {
@@ -109,16 +133,23 @@
             width: 100%;
             min-height: 120px;
             padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
+            border: 1px solid #475569;
+            border-radius: 8px;
             font-size: 1em;
             font-family: inherit;
             resize: vertical;
+            background: #0f172a;
+            color: #e2e8f0;
         }
 
         .task-textarea:focus {
             outline: none;
-            border-color: #9945FF;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .task-textarea::placeholder {
+            color: #64748b;
         }
 
         .task-options {
@@ -153,34 +184,37 @@
         }
 
         .submit-btn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #14F195 0%, #9945FF 100%);
+            padding: 12px 24px;
+            background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 1.1em;
-            transition: transform 0.2s ease;
+            font-weight: 500;
+            font-size: 1em;
+            transition: all 0.2s ease;
             align-self: flex-start;
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
+            background: #2563eb;
+            transform: translateY(-1px);
         }
 
         .submit-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
         .results-area {
-            flex: 1;
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            padding: 20px;
-            overflow-y: auto;
+            background: #0f172a;
+            padding: 25px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-left: 1px solid #334155;
         }
 
         .results-header {
@@ -188,30 +222,76 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-shrink: 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
         }
 
         .results-header h3 {
-            color: #333;
-            font-size: 1.2em;
+            color: #f1f5f9;
+            font-size: 1.3em;
+            margin: 0;
+            font-weight: 600;
         }
 
         .clear-btn {
-            padding: 8px 15px;
-            background: #6c757d;
-            color: white;
+            padding: 8px 16px;
+            background: #475569;
+            color: #e2e8f0;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: #64748b;
+        }
+
+        #taskResults {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 15px;
+            min-height: 0;
+        }
+
+        #taskResults::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #taskResults::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        #taskResults::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        #taskResults::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
         }
 
         .task-result {
-            background: white;
+            background: #1e293b;
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 20px;
-            border-left: 4px solid #9945FF;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-left: 3px solid #3b82f6;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid #334155;
+        }
+
+        .task-result:hover {
+            border-color: #475569;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
 
         .task-result.processing {
@@ -226,32 +306,257 @@
             border-left-color: #dc3545;
         }
 
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
         .task-title {
             font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+            color: #f1f5f9;
+            font-size: 1.2em;
+            flex: 1;
+            word-wrap: break-word;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .copy-btn {
+            background: #4299e1;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(66, 153, 225, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: #38a169;
+        }
+
+        .expand-btn {
+            background: #718096;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .expand-btn:hover {
+            background: #4a5568;
+            transform: translateY(-2px);
         }
 
         .task-meta {
             display: flex;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             font-size: 0.9em;
-            color: #666;
+            color: #718096;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .task-meta span {
+            background: #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 500;
+            color: #4a5568;
+            font-size: 0.85em;
+        }
+
+        .task-meta span.status-processing {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .task-meta span.status-completed {
+            background: #bbf7d0;
+            color: #166534;
+        }
+
+        .task-meta span.status-error {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        /* Processing animation */
+        .task-result.processing .task-content {
+            background: linear-gradient(45deg, #f8f9fa 25%, #fff 25%, #fff 50%, #f8f9fa 50%, #f8f9fa 75%, #fff 75%);
+            background-size: 20px 20px;
+            animation: processing-bg 2s linear infinite;
+        }
+
+        @keyframes processing-bg {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 20px; }
         }
 
         .task-content {
-            color: #444;
-            line-height: 1.6;
+            color: #e2e8f0;
+            line-height: 1.7;
             white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1em;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            overflow-y: auto;
+            max-height: none;
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #0f172a;
+            border: 1px solid #334155;
+            min-height: 200px;
+        }
+
+        .task-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .task-content::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 4px;
+        }
+
+        .task-content::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .task-content::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Markdown-style formatting for task content */
+        .task-content h1,
+        .task-content h2,
+        .task-content h3,
+        .task-content h4 {
+            color: #f1f5f9;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .task-content h1 { font-size: 1.5em; }
+        .task-content h2 { font-size: 1.3em; }
+        .task-content h3 { font-size: 1.1em; }
+        .task-content h4 { font-size: 1em; }
+
+        .task-content p {
+            margin: 10px 0;
+        }
+
+        .task-content ul,
+        .task-content ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .task-content li {
+            margin: 5px 0;
+        }
+
+        .task-content code {
+            background: #1e293b;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #60a5fa;
+            border: 1px solid #334155;
+        }
+
+        .task-content pre {
+            background: #1e293b;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 3px solid #3b82f6;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border: 1px solid #334155;
+        }
+
+        .task-content pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+            border: none;
+        }
+
+        .task-content blockquote {
+            border-left: 4px solid #3b82f6;
+            margin: 15px 0;
+            padding: 12px 20px;
+            background: #1e293b;
+            font-style: italic;
+            border: 1px solid #334155;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .task-content strong {
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .task-content em {
+            font-style: italic;
+            color: #94a3b8;
         }
 
         .agents-panel {
-            background: #f8f9fa;
-            border-left: 1px solid #e9ecef;
+            background: #0f172a;
             padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            margin-bottom: 20px;
             overflow-y: auto;
+            max-height: 400px;
         }
 
         .agents-header {
@@ -259,23 +564,30 @@
         }
 
         .agents-header h3 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .agents-header p {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin: 0;
         }
 
         .agent-card {
-            background: white;
-            border-radius: 10px;
+            background: #1e293b;
+            border-radius: 8px;
             padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #e9ecef;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
             transition: all 0.3s ease;
         }
 
         .agent-card:hover {
-            border-color: #9945FF;
-            box-shadow: 0 4px 12px rgba(153, 69, 255, 0.1);
+            border-color: #3b82f6;
+            background: #1e293b;
         }
 
         .agent-header {
@@ -287,8 +599,8 @@
 
         .agent-name {
             font-weight: 600;
-            color: #333;
-            font-size: 1em;
+            color: #f1f5f9;
+            font-size: 0.95em;
         }
 
         .agent-status {
@@ -314,14 +626,14 @@
         }
 
         .agent-role {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 6px;
         }
 
         .agent-capabilities {
-            font-size: 0.85em;
-            color: #777;
+            font-size: 0.8em;
+            color: #64748b;
         }
 
         .coordination-flow {
@@ -435,15 +747,158 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Enhanced Full Screen Support */
+        @media screen and (max-width: 1366px) {
+            .main-content {
+                grid-template-columns: 350px 1fr;
+            }
+            
+            .task-input-section {
+                padding: 20px;
+            }
+            
+            .task-result {
+                margin-bottom: 18px;
+                padding: 20px;
+            }
+            
+            .task-content {
+                font-size: 0.95em;
+                padding: 16px;
+            }
+            
+            .agents-panel {
+                padding: 18px;
+                max-height: 350px;
+            }
+        }
+
         @media (max-width: 1024px) {
             .main-content {
                 grid-template-columns: 1fr;
                 height: auto;
             }
             
+            .task-area {
+                border-right: none;
+                border-bottom: 1px solid #334155;
+                min-height: auto;
+                padding: 20px;
+            }
+
             .agents-panel {
-                border-left: none;
-                border-top: 1px solid #e9ecef;
+                max-height: 250px;
+                margin-bottom: 15px;
+            }
+
+            .results-area {
+                min-height: 60vh;
+            }
+
+            .task-content {
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 1.3em;
+            }
+
+            .swarm-status {
+                align-self: flex-end;
+            }
+
+            .task-area {
+                padding: 15px;
+            }
+
+            .results-area {
+                padding: 15px;
+            }
+
+            .task-result {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .task-content {
+                font-size: 0.85em;
+                line-height: 1.6;
+                padding: 15px;
+            }
+
+            .agents-panel {
+                padding: 15px;
+                max-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header p {
+                font-size: 1em;
+            }
+
+            .task-area {
+                padding: 15px;
+            }
+
+            .results-area {
+                padding: 10px;
+                max-height: 300px;
+            }
+
+            .task-result {
+                padding: 12px;
+            }
+
+            .task-content {
+                font-size: 0.8em;
+            }
+
+            .task-content h1 { font-size: 1.2em; }
+            .task-content h2 { font-size: 1.1em; }
+            .task-content h3 { font-size: 1em; }
+            .task-content h4 { font-size: 0.95em; }
+
+            .task-content pre {
+                font-size: 0.7em;
+                padding: 8px;
+                margin: 8px 0;
+            }
+
+            .copy-btn, .expand-btn {
+                font-size: 0.7em;
+                padding: 6px 10px;
+            }
+
+            .agents-panel {
+                padding: 10px;
+                max-height: 200px;
+                margin-bottom: 10px;
+            }
+
+            .agent-card {
+                padding: 10px;
             }
         }
     </style>
@@ -451,12 +906,14 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-left">
+                <h1>🐝 Solana Development Swarm</h1>
+                <p>Multi-Agent Coordination for Complex Solana Development Tasks</p>
+            </div>
             <div class="swarm-status">
                 <div class="status-dot" id="swarmStatusDot"></div>
                 <span id="swarmStatusText">Initializing...</span>
             </div>
-            <h1>🐝 Solana Development Swarm</h1>
-            <p>Multi-Agent Coordination for Complex Solana Development Tasks</p>
         </div>
         
         <div class="main-content">
@@ -498,107 +955,140 @@
                         <button class="submit-btn" id="submitTaskBtn">🚀 Execute Swarm Task</button>
                     </div>
                 </div>
-                
-                <div class="results-area">
-                    <div class="results-header">
-                        <h3>📊 Task Results</h3>
-                        <button class="clear-btn" id="clearResultsBtn">Clear All</button>
-                    </div>
-                    <div id="taskResults">
-                        <div class="task-result">
-                            <div class="task-title">Welcome to Solana Development Swarm!</div>
-                            <div class="task-content">Your swarm of AI agents is ready to tackle complex Solana development challenges. Submit a task above to see multi-agent coordination in action.
 
-Examples of complex tasks:
-• Build a complete DeFi yield farming protocol
-• Create an NFT marketplace with advanced features  
-• Develop a multi-signature wallet with governance
-• Design a cross-chain bridge integration
-• Implement a sophisticated trading bot with risk management</div>
+                <div class="agents-panel">
+                    <div class="agents-header">
+                        <h3>🤖 Agent Swarm</h3>
+                        <p style="color: #718096; font-size: 0.9em; margin: 0;">Specialized AI agents working in coordination</p>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <div class="agent-header">
+                            <div class="agent-name">� Coordinator</div>
+                            <div class="agent-status idle" id="coordinatorStatus">Idle</div>
+                        </div>
+                        <div class="agent-role">Task decomposition and orchestration</div>
+                        <div class="agent-capabilities">Breaks down complex tasks, coordinates specialists, synthesizes results</div>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <div class="agent-header">
+                            <div class="agent-name">� Code Specialist</div>
+                            <div class="agent-status idle" id="codeStatus">Idle</div>
+                        </div>
+                        <div class="agent-role">Smart contract development</div>
+                        <div class="agent-capabilities">Anchor programs, client-side code, testing frameworks</div>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <div class="agent-header">
+                            <div class="agent-name">🌐 Ecosystem Expert</div>
+                            <div class="agent-status idle" id="ecosystemStatus">Idle</div>
+                        </div>
+                        <div class="agent-role">DeFi protocol integration</div>
+                        <div class="agent-capabilities">Jupiter, Raydium, Orca, Metaplex, yield strategies</div>
+                    </div>
+                    
+                    <div class="agent-card">
+                        <div class="agent-header">
+                            <div class="agent-name">🔒 Security Auditor</div>
+                            <div class="agent-status idle" id="securityStatus">Idle</div>
+                        </div>
+                        <div class="agent-role">Security analysis and auditing</div>
+                        <div class="agent-capabilities">Vulnerability assessment, best practices, risk analysis</div>
+                    </div>
+                    
+                    <div class="coordination-flow">
+                        <h4 style="color: #1a202c; margin-bottom: 15px; font-weight: 600;">🔄 Coordination Flow</h4>
+                        <div class="flow-step">
+                            <div class="step-number" id="step1">1</div>
+                            <span>Task Analysis & Decomposition</span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number" id="step2">2</div>
+                            <span>Specialist Assignment</span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number" id="step3">3</div>
+                            <span>Parallel Execution</span>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-number" id="step4">4</div>
+                            <span>Result Synthesis</span>
+                        </div>
+                    </div>
+                    
+                    <div class="examples-section">
+                        <h4 style="color: #1a202c; margin-bottom: 15px; font-weight: 600;">💡 Example Complex Tasks</h4>
+                        <div class="example-task" data-task="Create a comprehensive DeFi yield farming protocol with Jupiter integration, including smart contracts, client interface, and security audit">
+                            <div class="example-title">DeFi Yield Farm + Jupiter</div>
+                            <div class="example-desc">Full protocol with DEX integration</div>
+                        </div>
+                        <div class="example-task" data-task="Build an NFT marketplace with royalty enforcement, escrow system, and Metaplex integration, including security analysis">
+                            <div class="example-title">NFT Marketplace Platform</div>
+                            <div class="example-desc">Complete marketplace with security</div>
+                        </div>
+                        <div class="example-task" data-task="Develop a multi-signature governance wallet with proposal system, voting mechanisms, and treasury management">
+                            <div class="example-title">DAO Governance System</div>
+                            <div class="example-desc">Multi-sig with governance features</div>
+                        </div>
+                        <div class="example-task" data-task="Create a sophisticated trading bot with risk management, multiple DEX integration, and real-time analytics">
+                            <div class="example-title">Advanced Trading Bot</div>
+                            <div class="example-desc">Multi-DEX bot with risk controls</div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="agents-panel">
-                <div class="agents-header">
-                    <h3>🤖 Agent Swarm</h3>
-                    <p style="color: #666; font-size: 0.9em;">Specialized AI agents working in coordination</p>
+            <div class="results-area">
+                <div class="results-header">
+                    <h3>� Conversation</h3>
+                    <button class="clear-btn" id="clearResultsBtn">Clear All</button>
                 </div>
-                
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-name">🎯 Coordinator</div>
-                        <div class="agent-status idle" id="coordinatorStatus">Idle</div>
-                    </div>
-                    <div class="agent-role">Task decomposition and orchestration</div>
-                    <div class="agent-capabilities">Breaks down complex tasks, coordinates specialists, synthesizes results</div>
-                </div>
-                
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-name">💻 Code Specialist</div>
-                        <div class="agent-status idle" id="codeStatus">Idle</div>
-                    </div>
-                    <div class="agent-role">Smart contract development</div>
-                    <div class="agent-capabilities">Anchor programs, client-side code, testing frameworks</div>
-                </div>
-                
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-name">🌐 Ecosystem Expert</div>
-                        <div class="agent-status idle" id="ecosystemStatus">Idle</div>
-                    </div>
-                    <div class="agent-role">DeFi protocol integration</div>
-                    <div class="agent-capabilities">Jupiter, Raydium, Orca, Metaplex, yield strategies</div>
-                </div>
-                
-                <div class="agent-card">
-                    <div class="agent-header">
-                        <div class="agent-name">🔒 Security Auditor</div>
-                        <div class="agent-status idle" id="securityStatus">Idle</div>
-                    </div>
-                    <div class="agent-role">Security analysis and auditing</div>
-                    <div class="agent-capabilities">Vulnerability assessment, best practices, risk analysis</div>
-                </div>
-                
-                <div class="coordination-flow">
-                    <h4 style="color: #333; margin-bottom: 15px;">🔄 Coordination Flow</h4>
-                    <div class="flow-step">
-                        <div class="step-number" id="step1">1</div>
-                        <span>Task Analysis & Decomposition</span>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number" id="step2">2</div>
-                        <span>Specialist Assignment</span>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number" id="step3">3</div>
-                        <span>Parallel Execution</span>
-                    </div>
-                    <div class="flow-step">
-                        <div class="step-number" id="step4">4</div>
-                        <span>Result Synthesis</span>
-                    </div>
-                </div>
-                
-                <div class="examples-section">
-                    <h4>💡 Example Complex Tasks</h4>
-                    <div class="example-task" data-task="Create a comprehensive DeFi yield farming protocol with Jupiter integration, including smart contracts, client interface, and security audit">
-                        <div class="example-title">DeFi Yield Farm + Jupiter</div>
-                        <div class="example-desc">Full protocol with DEX integration</div>
-                    </div>
-                    <div class="example-task" data-task="Build an NFT marketplace with royalty enforcement, escrow system, and Metaplex integration, including security analysis">
-                        <div class="example-title">NFT Marketplace Platform</div>
-                        <div class="example-desc">Complete marketplace with security</div>
-                    </div>
-                    <div class="example-task" data-task="Develop a multi-signature governance wallet with proposal system, voting mechanisms, and treasury management">
-                        <div class="example-title">DAO Governance System</div>
-                        <div class="example-desc">Multi-sig with governance features</div>
-                    </div>
-                    <div class="example-task" data-task="Create a sophisticated trading bot with risk management, multiple DEX integration, and real-time analytics">
-                        <div class="example-title">Advanced Trading Bot</div>
-                        <div class="example-desc">Multi-DEX bot with risk controls</div>
+                <div id="taskResults">
+                    <div class="task-result" style="border-left-color: #14F195;">
+                        <div class="task-header">
+                            <div class="task-title">🎉 Welcome to Solana Development Swarm!</div>
+                            <div class="task-actions">
+                                <span style="background: #14F195; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 500;">Ready to Use</span>
+                            </div>
+                        </div>
+                        <div class="task-content" style="border-left-color: #14F195; background: linear-gradient(135deg, #f0fff4 0%, #f7fafc 100%);">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <h2 style="color: #14F195; margin-bottom: 10px;">� Your AI Agent Swarm is Ready!</h2>
+                                <p style="color: #4a5568; font-size: 1.1em;">Submit a complex Solana development task to see multi-agent coordination in action.</p>
+                            </div>
+                            
+                            <div style="background: white; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                                <h3 style="color: #2d3748; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 1.2em;">💡</span> Example Complex Tasks
+                                </h3>
+                                <div style="display: grid; gap: 12px;">
+                                    <div style="padding: 12px; background: #f7fafc; border-left: 4px solid #9945FF; border-radius: 6px;">
+                                        <strong>🏦 DeFi Yield Farming Protocol</strong><br>
+                                        <span style="color: #718096;">Complete protocol with Jupiter integration, smart contracts, and security audit</span>
+                                    </div>
+                                    <div style="padding: 12px; background: #f7fafc; border-left: 4px solid #14F195; border-radius: 6px;">
+                                        <strong>🎨 NFT Marketplace Platform</strong><br>
+                                        <span style="color: #718096;">Advanced marketplace with royalty enforcement, escrow, and Metaplex integration</span>
+                                    </div>
+                                    <div style="padding: 12px; background: #f7fafc; border-left: 4px solid #ffd700; border-radius: 6px;">
+                                        <strong>🏛️ DAO Governance System</strong><br>
+                                        <span style="color: #718096;">Multi-signature wallet with proposal system and treasury management</span>
+                                    </div>
+                                    <div style="padding: 12px; background: #f7fafc; border-left: 4px solid #ff6b6b; border-radius: 6px;">
+                                        <strong>🤖 Advanced Trading Bot</strong><br>
+                                        <span style="color: #718096;">Multi-DEX integration with risk management and real-time analytics</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="text-align: center; padding: 15px; background: rgba(20, 241, 149, 0.1); border-radius: 8px; border: 1px dashed #14F195;">
+                                <p style="margin: 0; color: #2d3748; font-weight: 500;">
+                                    ⚡ Powered by <strong>Groq Llama 4 Scout</strong> for ultra-fast responses
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -989,15 +1479,25 @@ Examples of complex tasks:
                 const coordination = this.requiresCoordination.checked ? 'Yes' : 'No';
                 
                 resultDiv.innerHTML = `
-                    <div class="task-title">Task ${this.taskCounter}: ${task.substring(0, 60)}${task.length > 60 ? '...' : ''}</div>
+                    <div class="task-header">
+                        <div class="task-title">Task ${this.taskCounter}: ${task.length > 80 ? task.substring(0, 80) + '...' : task}</div>
+                        <div class="task-actions">
+                            <button class="expand-btn" onclick="window.solanaSwarm.toggleExpand('${taskId}')">
+                                <span class="expand-icon">⛶</span> Expand
+                            </button>
+                            <button class="copy-btn" onclick="window.solanaSwarm.copyTaskResult('${taskId}')">
+                                <span class="copy-icon">📋</span> Copy
+                            </button>
+                        </div>
+                    </div>
                     <div class="task-meta">
-                        <span>Priority: ${priority.toUpperCase()}</span>
-                        <span>Complexity: ${complexity.toUpperCase()}</span>
-                        <span>Coordination: ${coordination}</span>
-                        <span>Status: ${status.toUpperCase()}</span>
+                        <span>🎯 ${priority.toUpperCase()}</span>
+                        <span>⚡ ${complexity.toUpperCase()}</span>
+                        <span>🤝 ${coordination}</span>
+                        <span class="status-${status}">📊 ${status.toUpperCase()}</span>
                     </div>
                     <div class="task-content" id="${taskId}-content">
-                        ${status === 'processing' ? 'Processing task with swarm coordination...' : ''}
+                        ${status === 'processing' ? '<div style="text-align: center; padding: 40px;"><div class="spinner-large" style="width: 30px; height: 30px; margin: 0 auto 15px;"></div><p>🔄 Processing task with swarm coordination...</p></div>' : ''}
                     </div>
                 `;
                 
@@ -1008,6 +1508,47 @@ Examples of complex tasks:
                 } else {
                     this.taskResults.insertBefore(resultDiv, this.taskResults.firstChild);
                 }
+
+                // Scroll to the new result
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            toggleExpand(taskId) {
+                const contentElement = document.getElementById(`${taskId}-content`);
+                const expandBtn = document.querySelector(`#${taskId} .expand-btn`);
+                const expandIcon = expandBtn.querySelector('.expand-icon');
+                
+                if (contentElement.style.maxHeight === 'none' || contentElement.style.maxHeight === '') {
+                    contentElement.style.maxHeight = '800px';
+                    expandIcon.textContent = '⛶';
+                    expandBtn.innerHTML = '<span class="expand-icon">⛶</span> Expand';
+                } else {
+                    contentElement.style.maxHeight = 'none';
+                    expandIcon.textContent = '⛷';
+                    expandBtn.innerHTML = '<span class="expand-icon">⛷</span> Collapse';
+                }
+            }
+
+            copyTaskResult(taskId) {
+                const contentElement = document.getElementById(`${taskId}-content`);
+                if (contentElement) {
+                    const textContent = contentElement.textContent || contentElement.innerText;
+                    navigator.clipboard.writeText(textContent).then(() => {
+                        const copyBtn = document.querySelector(`#${taskId} .copy-btn`);
+                        if (copyBtn) {
+                            const originalHTML = copyBtn.innerHTML;
+                            copyBtn.innerHTML = '<span class="copy-icon">✅</span> Copied!';
+                            copyBtn.classList.add('copied');
+                            setTimeout(() => {
+                                copyBtn.innerHTML = originalHTML;
+                                copyBtn.classList.remove('copied');
+                            }, 2000);
+                        }
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                        alert('Failed to copy text to clipboard');
+                    });
+                }
             }
             
             updateTaskResult(taskId, content, status) {
@@ -1016,14 +1557,65 @@ Examples of complex tasks:
                     taskElement.className = `task-result ${status}`;
                     const contentElement = document.getElementById(`${taskId}-content`);
                     if (contentElement) {
-                        contentElement.textContent = content;
+                        // Format the content for better readability
+                        const formattedContent = this.formatTaskContent(content);
+                        contentElement.innerHTML = formattedContent;
                     }
                     // Update status in meta
                     const metaElement = taskElement.querySelector('.task-meta');
                     if (metaElement) {
-                        metaElement.innerHTML = metaElement.innerHTML.replace(/Status: \\w+/, `Status: ${status.toUpperCase()}`);
+                        metaElement.innerHTML = metaElement.innerHTML.replace(/Status: \w+/, `Status: ${status.toUpperCase()}`);
                     }
                 }
+            }
+
+            formatTaskContent(content) {
+                if (typeof content !== 'string') {
+                    content = String(content);
+                }
+
+                // Convert markdown-like formatting to HTML
+                return content
+                    // Headers
+                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                    
+                    // Bold text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    
+                    // Code blocks
+                    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                    
+                    // Inline code
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    
+                    // Lists
+                    .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                    .replace(/^- (.*$)/gm, '<li>$1</li>')
+                    
+                    // Wrap consecutive list items in ul tags
+                    .replace(/(<li>.*<\/li>\s*)+/gs, '<ul>$&</ul>')
+                    
+                    // Line breaks
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/^(.*)$/gm, function(match, content) {
+                        // Don't wrap if it's already HTML
+                        if (content.match(/^<[h1-6]|<ul|<li|<pre|<strong|<code/)) {
+                            return content;
+                        }
+                        return content.trim() ? `<p>${content}</p>` : '';
+                    })
+                    
+                    // Clean up empty paragraphs and fix nested tags
+                    .replace(/<p><\/p>/g, '')
+                    .replace(/<p>(<[h1-6].*?<\/[h1-6]>)<\/p>/g, '$1')
+                    .replace(/<p>(<ul>.*?<\/ul>)<\/p>/gs, '$1')
+                    .replace(/<p>(<pre>.*?<\/pre>)<\/p>/gs, '$1')
+                    
+                    // Fix multiple paragraphs
+                    .replace(/<\/p><p>/g, '</p>\n<p>');
             }
             
             animateFlow() {
