@@ -7,6 +7,7 @@ include("server/src/JuliaOSServer.jl")
 include("utils.jl")
 include("openapi_server_extensions.jl")
 include("validation.jl")
+include("yieldswarm_api.jl")
 
 using .JuliaOSServer
 using ..JuliaDB
@@ -208,9 +209,13 @@ function run_server(host::AbstractString="0.0.0.0", port::Integer=8052)
         router = JuliaOSServer.register(router, @__MODULE__; path_prefix="/api/v1")
         HTTP.register!(router, "GET", "/ping", ping)
         
+        # Register YieldSwarm API routes
+        register_yieldswarm_routes(router)
+        
         # Apply CORS middleware
         server[] = HTTP.serve!(cors_handler(router), host, port)
         @info "Server started with CORS support on http://$(host):$(port)"
+        @info "YieldSwarm API available at http://$(host):$(port)/api/v1/yieldswarm/*"
         wait(server[])
     catch ex
         @error("Server error", exception=(ex, catch_backtrace()))

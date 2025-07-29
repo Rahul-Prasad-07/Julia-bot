@@ -10,6 +10,7 @@ include("telegram/strategy_support.jl")
 include("strategy_ai_news_scraping.jl")
 include("strategy_solana_dev_chat.jl")
 include("strategy_solana_swarm_dev.jl")
+include("strategy_yieldswarm.jl")
 
 using ..CommonTypes: StrategySpecification
 
@@ -33,5 +34,6 @@ register_strategy(STRATEGY_TELEGRAM_SUPPORT_SPECIFICATION)
 register_strategy(STRATEGY_AI_NEWS_SCRAPING_SPECIFICATION)
 register_strategy(STRATEGY_SOLANA_DEV_CHAT_SPECIFICATION)
 register_strategy(STRATEGY_SOLANA_SWARM_DEV_SPECIFICATION)
+register_strategy(STRATEGY_YIELDSWARM_SPECIFICATION)
 
 end
