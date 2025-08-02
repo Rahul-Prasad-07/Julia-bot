@@ -26,7 +26,7 @@ class YieldSwarmAPI {
 
         try {
             const response = await fetch(url, config);
-            
+
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
@@ -169,6 +169,118 @@ class YieldSwarmAPI {
     }
 
     /**
+     * Get real-time protocol data
+     */
+    async getRealTimeData(dataType = "comprehensive", chains = ["ethereum", "solana"], protocols = []) {
+        if (!this.agentId) {
+            throw new Error('Agent not initialized. Please create an agent first.');
+        }
+
+        const payload = {
+            user_query: `Fetch real-time ${dataType} data for analysis`,
+            portfolio_data: {},
+            market_context: {
+                current_market: "bull",
+                volatility: "medium",
+                timestamp: Date.now()
+            },
+            risk_preferences: {
+                data_type: dataType,
+                chains: chains,
+                protocols: protocols
+            },
+            execution_mode: "analyze",
+            coordination_required: false,
+            tool_specific_params: {
+                tool_name: "yieldswarm_data_fetcher",
+                data_type: dataType,
+                chains: chains,
+                protocols: protocols
+            }
+        };
+
+        return await this.queryAgent(this.agentId, payload);
+    }
+
+    /**
+     * Get live yield opportunities with real-time data
+     */
+    async getLiveYieldOpportunities(chains = ["ethereum", "solana"]) {
+        try {
+            const data = await this.getRealTimeData("yields", chains);
+            return this.parseYieldData(data);
+        } catch (error) {
+            console.error('Failed to fetch live yield data:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get current token prices
+     */
+    async getCurrentPrices(tokens = ["ethereum", "solana", "bitcoin", "usd-coin"]) {
+        try {
+            const data = await this.getRealTimeData("prices", [], []);
+            return this.parsePriceData(data);
+        } catch (error) {
+            console.error('Failed to fetch price data:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Parse yield data from API response
+     */
+    parseYieldData(response) {
+        const yields = [];
+
+        if (response && response.data && response.data.yields) {
+            for (const [poolKey, yieldInfo] of Object.entries(response.data.yields)) {
+                if (yieldInfo.apy && yieldInfo.apy > 0) {
+                    yields.push({
+                        id: poolKey,
+                        protocol: yieldInfo.protocol || 'Unknown',
+                        chain: yieldInfo.chain || 'Unknown',
+                        symbol: yieldInfo.symbol || 'Unknown',
+                        apy: yieldInfo.apy || 0,
+                        apyBase: yieldInfo.apy_base || 0,
+                        apyReward: yieldInfo.apy_reward || 0,
+                        tvl: yieldInfo.tvl_usd || 0,
+                        confidence: yieldInfo.confidence || 0,
+                        ilRisk: yieldInfo.il_risk || 'unknown',
+                        exposure: yieldInfo.exposure || 'single',
+                        underlyingTokens: yieldInfo.underlyingTokens || []
+                    });
+                }
+            }
+        }
+
+        // Sort by APY descending
+        return yields.sort((a, b) => b.apy - a.apy);
+    }
+
+    /**
+     * Parse price data from API response
+     */
+    parsePriceData(response) {
+        const prices = {};
+
+        if (response && response.data && response.data.prices) {
+            for (const [token, priceInfo] of Object.entries(response.data.prices)) {
+                prices[token] = {
+                    price: priceInfo.price_usd || 0,
+                    change24h: priceInfo.change_24h || 0,
+                    marketCap: priceInfo.market_cap || 0,
+                    volume24h: priceInfo.volume_24h || 0,
+                    timestamp: priceInfo.timestamp || new Date().toISOString()
+                };
+            }
+        }
+
+        return prices;
+    }
+
+    /**
      * Analyze portfolio yield opportunities
      */
     async analyzeYield(portfolioData, riskPreferences, marketContext = {}) {
@@ -265,22 +377,22 @@ class YieldSwarmAPI {
         const totalValue = portfolioData.total_value || 0;
         const riskLevel = riskPreferences.risk_tolerance || "medium";
         const chains = portfolioData.target_chains || ["ethereum"];
-        
+
         let query = `Analyze yield opportunities for a $${totalValue.toLocaleString()} portfolio with ${riskLevel} risk tolerance. `;
-        
+
         if (portfolioData.assets) {
             const assetsList = Object.keys(portfolioData.assets).join(", ");
             query += `Current assets include: ${assetsList}. `;
         }
-        
+
         query += `Focus on ${chains.join(", ")} chains. `;
-        
+
         if (riskPreferences.min_apy_threshold) {
             query += `Target minimum APY of ${riskPreferences.min_apy_threshold}%. `;
         }
-        
+
         query += "Provide specific protocol recommendations with APY rates, risk assessments, and position sizing suggestions.";
-        
+
         return query;
     }
 
@@ -289,21 +401,21 @@ class YieldSwarmAPI {
      */
     buildExecutionQuery(strategyConfig) {
         let query = `Execute ${strategyConfig.type || 'balanced'} yield farming strategy. `;
-        
+
         if (strategyConfig.protocols) {
             query += `Focus on ${strategyConfig.protocols.join(", ")} protocols. `;
         }
-        
+
         if (strategyConfig.maxSlippage) {
             query += `Maximum slippage tolerance: ${strategyConfig.maxSlippage}%. `;
         }
-        
+
         if (strategyConfig.timeframe) {
             query += `Execution timeframe: ${strategyConfig.timeframe}. `;
         }
-        
+
         query += "Provide detailed execution plan with transaction sequences, gas estimates, and risk mitigation measures.";
-        
+
         return query;
     }
 
@@ -338,7 +450,7 @@ class YieldSwarmAPI {
                     agentRole: response.swarm_results.analysis.agent_role
                 };
             }
-            
+
             if (response.swarm_results.risk_assessment) {
                 result.riskAssessment = {
                     success: response.swarm_results.risk_assessment.success,
@@ -356,18 +468,18 @@ class YieldSwarmAPI {
      */
     extractProtocolRecommendations(analysisMessage) {
         const protocols = [];
-        
+
         // Parse protocol information from the message
         // This is a simplified parser - in production, you might want more sophisticated parsing
         const lines = analysisMessage.split('\n');
         let currentProtocol = null;
-        
+
         lines.forEach(line => {
             // Look for protocol names (patterns like "Uniswap V3", "Raydium", etc.)
             const protocolMatch = line.match(/\*\*(.*?)\*\*/);
             if (protocolMatch) {
                 const protocolName = protocolMatch[1];
-                if (protocolName.includes('Uniswap') || protocolName.includes('Raydium') || 
+                if (protocolName.includes('Uniswap') || protocolName.includes('Raydium') ||
                     protocolName.includes('Aave') || protocolName.includes('Compound')) {
                     currentProtocol = {
                         name: protocolName,
@@ -378,25 +490,25 @@ class YieldSwarmAPI {
                     protocols.push(currentProtocol);
                 }
             }
-            
+
             // Look for APY information
             const apyMatch = line.match(/(\d+\.?\d*)%\s*(APY|APR)/i);
             if (apyMatch && currentProtocol) {
                 currentProtocol.apy = parseFloat(apyMatch[1]);
             }
-            
+
             // Look for risk information
             const riskMatch = line.match(/Risk\s*Score:\s*(\d+)\/10/i);
             if (riskMatch && currentProtocol) {
                 currentProtocol.riskScore = parseInt(riskMatch[1]);
             }
-            
+
             // Collect additional details
             if (currentProtocol && line.trim() && !line.includes('**')) {
                 currentProtocol.details.push(line.trim());
             }
         });
-        
+
         return protocols;
     }
 
@@ -411,10 +523,10 @@ class YieldSwarmAPI {
             marketRisk: 0,
             impermanentLossRisk: 0
         };
-        
+
         // Parse risk scores from the message
         const riskMatches = riskMessage.match(/Risk Score:\s*(\d+(?:\.\d+)?)\/10/gi) || [];
-        
+
         riskMatches.forEach((match, index) => {
             const score = parseFloat(match.match(/(\d+(?:\.\d+)?)/)[1]);
             switch (index) {
@@ -432,7 +544,7 @@ class YieldSwarmAPI {
                     break;
             }
         });
-        
+
         return metrics;
     }
 

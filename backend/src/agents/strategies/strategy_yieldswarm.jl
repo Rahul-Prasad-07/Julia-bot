@@ -157,7 +157,7 @@ function handle_yield_analysis(cfg::StrategyYieldSwarmConfig, ctx::AgentContext,
         analysis_params["asset_pair"] = input.portfolio_data["asset_pair"]
     end
     
-    # Use YieldSwarm analyzer tool
+    # Use YieldSwarm analyzer tool with real-time data
     analyzer_tool = nothing
     for tool in ctx.tools
         if tool.metadata.name == "yieldswarm_analyzer"
@@ -169,6 +169,10 @@ function handle_yield_analysis(cfg::StrategyYieldSwarmConfig, ctx::AgentContext,
     if analyzer_tool === nothing
         return Dict("success" => false, "error" => "YieldSwarm analyzer tool not available")
     end
+    
+    # Enhance analysis parameters with real-time data fetching
+    analysis_params["fetch_real_time_data"] = true
+    analysis_params["data_sources"] = ["defillama", "coingecko", "protocol_apis"]
     
     try
         analysis_result = analyzer_tool.execute(analyzer_tool.config, analysis_params)

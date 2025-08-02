@@ -19,6 +19,7 @@ include("tool_solana_knowledge_multi_model.jl")
 include("tool_yieldswarm_analyzer.jl")
 include("tool_yieldswarm_executor.jl")
 include("tool_yieldswarm_risk_manager.jl")
+include("tool_yieldswarm_data_fetcher.jl")
 
 using ..CommonTypes: ToolSpecification
 
@@ -51,5 +52,6 @@ register_tool(TOOL_SOLANA_KNOWLEDGE_MULTI_MODEL_SPECIFICATION)
 register_tool(TOOL_YIELDSWARM_ANALYZER_SPECIFICATION)
 register_tool(TOOL_YIELDSWARM_EXECUTOR_SPECIFICATION)
 register_tool(TOOL_YIELDSWARM_RISK_MANAGER_SPECIFICATION)
+register_tool(TOOL_YIELDSWARM_DATA_FETCHER_SPECIFICATION)
 
 end

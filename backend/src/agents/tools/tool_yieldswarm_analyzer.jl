@@ -44,11 +44,17 @@ function tool_yieldswarm_analyzer(cfg::ToolYieldSwarmAnalyzerConfig, task::Dict)
     
     analysis_type = task["analysis_type"]
     
-    # Enhanced DeFi yield analysis context
+    # Fetch real-time data first
+    real_time_data = fetch_real_time_protocol_data(task)
+    
+    # Enhanced DeFi yield analysis context with real-time data
     defi_context = """
     You are an expert DeFi yield strategist and cross-chain optimization specialist. 
     You have deep knowledge of yield farming, liquidity provision, lending protocols, 
     and advanced DeFi strategies across multiple chains.
+    
+    REAL-TIME MARKET DATA AVAILABLE:
+    $(format_real_time_data_for_prompt(real_time_data))
     
     CORE COMPETENCIES:
     
@@ -333,6 +339,119 @@ function call_gemini_api(cfg::ToolYieldSwarmAnalyzerConfig, prompt::String)
     
     answer = Gemini.gemini_util(gemini_cfg, prompt)
     return Dict("output" => answer, "success" => true, "provider" => "gemini")
+end
+
+"""
+Fetch real-time protocol data for analysis
+"""
+function fetch_real_time_protocol_data(task::Dict)
+    # Extract chains and protocols from task
+    chains = get(task, "chains", ["ethereum", "solana"])
+    protocols = get(task, "protocols", String[])
+    
+    # Create data fetcher config
+    data_fetcher_config = ToolYieldSwarmDataFetcherConfig()
+    
+    # Fetch comprehensive real-time data
+    fetch_task = Dict(
+        "data_type" => "comprehensive",
+        "chains" => chains,
+        "protocols" => protocols
+    )
+    
+    try
+        # Import and use the data fetcher tool
+        include("tool_yieldswarm_data_fetcher.jl")
+        result = tool_yieldswarm_data_fetcher(data_fetcher_config, fetch_task)
+        
+        if result["success"]
+            return result["data"]
+        else
+            @warn "Failed to fetch real-time data: $(result["error"])"
+            return Dict{String, Any}()
+        end
+    catch e
+        @warn "Error fetching real-time data: $e"
+        return Dict{String, Any}()
+    end
+end
+
+"""
+Format real-time data for AI prompt
+"""
+function format_real_time_data_for_prompt(data::Dict{String, Any})
+    if isempty(data)
+        return "No real-time data available - using built-in protocol knowledge."
+    end
+    
+    prompt_parts = String[]
+    
+    # Format yield data
+    if haskey(data, "yields") && !isempty(data["yields"])
+        push!(prompt_parts, "\n📊 LIVE YIELD OPPORTUNITIES:")
+        
+        # Sort yields by APY descending
+        sorted_yields = sort(collect(data["yields"]), by=x->get(x[2], "apy", 0.0), rev=true)
+        
+        for (pool_key, yield_info) in sorted_yields[1:min(20, length(sorted_yields))]  # Top 20
+            apy = get(yield_info, "apy", 0.0)
+            protocol = get(yield_info, "protocol", "unknown")
+            chain = get(yield_info, "chain", "unknown")
+            tvl = get(yield_info, "tvl_usd", 0.0)
+            symbol = get(yield_info, "symbol", "")
+            
+            if apy > 0
+                push!(prompt_parts, "• $(uppercase(protocol)) on $(uppercase(chain)): $(symbol) - $(round(apy, digits=2))% APY (TVL: \$$(format_number(tvl)))")
+            end
+        end
+    end
+    
+    # Format price data
+    if haskey(data, "prices") && !isempty(data["prices"])
+        push!(prompt_parts, "\n💰 CURRENT TOKEN PRICES:")
+        for (token, price_info) in data["prices"]
+            price = get(price_info, "price_usd", 0.0)
+            change = get(price_info, "change_24h", 0.0)
+            change_indicator = change >= 0 ? "📈" : "📉"
+            push!(prompt_parts, "• $(uppercase(token)): \$$(round(price, digits=2)) $(change_indicator) $(round(change, digits=2))%")
+        end
+    end
+    
+    # Format TVL data
+    if haskey(data, "tvl") && !isempty(data["tvl"])
+        push!(prompt_parts, "\n🏦 PROTOCOL TVL DATA:")
+        sorted_tvl = sort(collect(data["tvl"]), by=x->get(x[2], "tvl", 0.0), rev=true)
+        
+        for (protocol, tvl_info) in sorted_tvl[1:min(15, length(sorted_tvl))]  # Top 15
+            tvl = get(tvl_info, "tvl", 0.0)
+            change_7d = get(tvl_info, "change_7d", 0.0)
+            category = get(tvl_info, "category", "DeFi")
+            
+            if tvl > 1000000  # Only show protocols with >$1M TVL
+                push!(prompt_parts, "• $(uppercase(protocol)) ($(category)): \$$(format_number(tvl)) TVL (7d: $(round(change_7d, digits=2))%)")
+            end
+        end
+    end
+    
+    push!(prompt_parts, "\n⏰ Data timestamp: $(get(data, "timestamp", "unknown"))")
+    push!(prompt_parts, "✨ Use this LIVE data for accurate recommendations!")
+    
+    return join(prompt_parts, "\n")
+end
+
+"""
+Format large numbers for display
+"""
+function format_number(num::Real)
+    if num >= 1e9
+        return "$(round(num/1e9, digits=2))B"
+    elseif num >= 1e6
+        return "$(round(num/1e6, digits=2))M"
+    elseif num >= 1e3
+        return "$(round(num/1e3, digits=2))K"
+    else
+        return string(round(num, digits=2))
+    end
 end
 
 const TOOL_YIELDSWARM_ANALYZER_METADATA = ToolMetadata(

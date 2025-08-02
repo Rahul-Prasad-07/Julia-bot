@@ -9,7 +9,7 @@ class YieldSwarmUI {
         this.portfolioAssets = new Map();
         this.currentAgent = null;
         this.notifications = [];
-        
+
         this.initializeEventListeners();
         this.initializeNavigation();
     }
@@ -42,6 +42,14 @@ class YieldSwarmUI {
             });
         });
 
+        // Real-time data controls
+        document.getElementById('refreshDataBtn')?.addEventListener('click', () => this.refreshRealTimeData());
+        document.getElementById('viewLiveYieldsBtn')?.addEventListener('click', () => this.showLiveYields());
+        document.getElementById('updatePricesBtn')?.addEventListener('click', () => this.updateCurrentPrices());
+
+        // Auto-refresh timer (every 5 minutes)
+        setInterval(() => this.autoRefreshData(), 5 * 60 * 1000);
+
         // Modal controls
         document.getElementById('modalCloseBtn').addEventListener('click', () => this.closeModal());
         document.getElementById('modalCloseFooterBtn').addEventListener('click', () => this.closeModal());
@@ -62,7 +70,7 @@ class YieldSwarmUI {
                 e.preventDefault();
                 const target = link.getAttribute('href').substring(1);
                 this.showSection(target);
-                
+
                 // Update active nav link
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
@@ -77,7 +85,7 @@ class YieldSwarmUI {
         document.querySelectorAll('.section').forEach(section => {
             section.classList.remove('active');
         });
-        
+
         const targetSection = document.getElementById(sectionId);
         if (targetSection) {
             targetSection.classList.add('active');
@@ -91,7 +99,7 @@ class YieldSwarmUI {
         const statusElement = document.getElementById('connectionStatus');
         const icon = statusElement.querySelector('i');
         const text = statusElement.querySelector('span');
-        
+
         if (connected) {
             statusElement.className = 'connection-status connected';
             text.textContent = 'Connected';
@@ -111,16 +119,16 @@ class YieldSwarmUI {
 
             const agent = await this.api.createAgent();
             this.currentAgent = agent;
-            
+
             // Update UI
             document.getElementById('agentName').textContent = agent.name;
             document.getElementById('agentId').textContent = agent.id;
             this.updateAgentStatus(agent.state || 'CREATED');
-            
+
             // Enable start button
             document.getElementById('startAgentBtn').disabled = false;
             document.getElementById('createAgentBtn').disabled = true;
-            
+
             this.showNotification('Agent created successfully!', 'success');
         } catch (error) {
             console.error('Failed to create agent:', error);
@@ -139,11 +147,11 @@ class YieldSwarmUI {
         try {
             this.setButtonLoading('startAgentBtn', true);
             await this.api.startAgent(this.currentAgent.id);
-            
+
             this.updateAgentStatus('RUNNING');
             document.getElementById('startAgentBtn').disabled = true;
             document.getElementById('stopAgentBtn').disabled = false;
-            
+
             this.showNotification('Agent started successfully!', 'success');
         } catch (error) {
             console.error('Failed to start agent:', error);
@@ -162,11 +170,11 @@ class YieldSwarmUI {
         try {
             this.setButtonLoading('stopAgentBtn', true);
             await this.api.stopAgent(this.currentAgent.id);
-            
+
             this.updateAgentStatus('STOPPED');
             document.getElementById('startAgentBtn').disabled = false;
             document.getElementById('stopAgentBtn').disabled = true;
-            
+
             this.showNotification('Agent stopped successfully!', 'warning');
         } catch (error) {
             console.error('Failed to stop agent:', error);
@@ -182,9 +190,9 @@ class YieldSwarmUI {
     updateAgentStatus(status) {
         const statusDot = document.getElementById('agentStatusDot');
         const statusText = document.getElementById('agentStatusText');
-        
+
         statusDot.className = 'status-dot';
-        
+
         switch (status.toUpperCase()) {
             case 'RUNNING':
                 statusDot.classList.add('running');
@@ -243,7 +251,7 @@ class YieldSwarmUI {
             // Display results
             this.displayAnalysisResults(parsedResponse);
             this.updateCoordinationMetrics(parsedResponse);
-            
+
             this.showNotification('Analysis completed successfully!', 'success');
         } catch (error) {
             console.error('Analysis failed:', error);
@@ -306,7 +314,7 @@ class YieldSwarmUI {
             // Display results
             this.displayStrategyResults(parsedResponse, mode);
             this.updateCoordinationMetrics(parsedResponse);
-            
+
             const action = mode === 'execute' ? 'executed' : 'simulated';
             this.showNotification(`Strategy ${action} successfully!`, 'success');
         } catch (error) {
@@ -342,7 +350,7 @@ class YieldSwarmUI {
         // Update UI
         this.updateAssetTable();
         this.updatePortfolioStats();
-        
+
         // Clear form
         document.getElementById('assetSymbol').value = '';
         document.getElementById('assetAmount').value = '';
@@ -366,7 +374,7 @@ class YieldSwarmUI {
      */
     updateAssetTable() {
         const tbody = document.getElementById('assetTableBody');
-        
+
         if (this.portfolioAssets.size === 0) {
             tbody.innerHTML = '<tr class="empty-state"><td colspan="5">No assets configured. Add assets to get started.</td></tr>';
             return;
@@ -401,7 +409,7 @@ class YieldSwarmUI {
     updatePortfolioStats() {
         const totalValue = this.calculateTotalPortfolioValue();
         document.getElementById('totalPortfolioValue').textContent = this.api.formatCurrency(totalValue);
-        
+
         // Update active chains count
         const chains = this.getSelectedChains();
         document.getElementById('activeChains').textContent = chains.length;
@@ -490,7 +498,7 @@ class YieldSwarmUI {
 
         queryElement.value = query;
         maxSlippage.value = slippage;
-        
+
         // Switch to strategies section
         this.showSection('strategies');
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -504,9 +512,9 @@ class YieldSwarmUI {
      */
     displayAnalysisResults(parsedResponse) {
         const content = document.getElementById('resultsContent');
-        
+
         let html = '<div class="results-sections">';
-        
+
         // Success status
         html += `<div class="result-section">
             <h3>Analysis Status</h3>
@@ -524,9 +532,9 @@ class YieldSwarmUI {
             html += `<div class="result-section">
                 <h3>Yield Analysis</h3>
                 <div class="protocol-recommendations">`;
-            
+
             const protocols = this.api.extractProtocolRecommendations(parsedResponse.analysis.message);
-            
+
             if (protocols.length > 0) {
                 protocols.forEach(protocol => {
                     html += `<div class="protocol-recommendation">
@@ -542,7 +550,7 @@ class YieldSwarmUI {
             } else {
                 html += `<div class="result-content">${parsedResponse.analysis.message}</div>`;
             }
-            
+
             html += `</div></div>`;
         }
 
@@ -552,7 +560,7 @@ class YieldSwarmUI {
                 <h3>Risk Assessment</h3>
                 <div class="result-content">${parsedResponse.riskAssessment.message}</div>
             </div>`;
-            
+
             // Update risk metrics in the UI
             const riskMetrics = this.api.extractRiskMetrics(parsedResponse.riskAssessment.message);
             this.updateRiskMetrics(riskMetrics);
@@ -567,7 +575,7 @@ class YieldSwarmUI {
      */
     displayStrategyResults(parsedResponse, mode) {
         const content = document.getElementById('resultsContent');
-        
+
         let html = `<div class="results-sections">
             <div class="result-section">
                 <h3>Strategy ${mode === 'execute' ? 'Execution' : 'Simulation'} Results</h3>
@@ -616,7 +624,7 @@ class YieldSwarmUI {
         this.updateRiskBar('contractRiskFill', 'contractRiskValue', metrics.smartContractRisk);
         this.updateRiskBar('liquidityRiskFill', 'liquidityRiskValue', metrics.liquidityRisk);
         this.updateRiskBar('marketRiskFill', 'marketRiskValue', metrics.marketRisk);
-        
+
         // Update main risk score
         document.getElementById('riskScore').textContent = `${metrics.overallRisk}/10`;
     }
@@ -627,7 +635,7 @@ class YieldSwarmUI {
     updateRiskBar(fillId, valueId, score) {
         const fill = document.getElementById(fillId);
         const value = document.getElementById(valueId);
-        
+
         if (fill && value) {
             fill.style.width = `${(score / 10) * 100}%`;
             value.textContent = `${score}/10`;
@@ -641,12 +649,12 @@ class YieldSwarmUI {
         document.getElementById('portfolioValue').value = '';
         document.getElementById('riskTolerance').value = 'medium';
         document.getElementById('analysisQuery').value = 'Find the best yield farming opportunities for my portfolio with medium risk tolerance. Focus on stable protocols with good liquidity.';
-        
+
         // Uncheck all chains except Ethereum
         document.querySelectorAll('input[type="checkbox"][value]').forEach(cb => {
             cb.checked = cb.value === 'ethereum';
         });
-        
+
         this.updatePortfolioStats();
     }
 
@@ -657,7 +665,7 @@ class YieldSwarmUI {
         document.getElementById('modalTitle').textContent = title;
         const modal = document.getElementById('resultsModal');
         const content = document.getElementById('resultsContent');
-        
+
         if (loading) {
             content.innerHTML = `
                 <div class="loading-spinner">
@@ -666,7 +674,7 @@ class YieldSwarmUI {
                 </div>
             `;
         }
-        
+
         modal.classList.add('active');
     }
 
@@ -758,10 +766,10 @@ class YieldSwarmUI {
         const valueInput = document.getElementById('assetValue');
         const amountInput = document.getElementById('assetAmount');
         const symbolInput = document.getElementById('assetSymbol');
-        
+
         const value = parseFloat(valueInput.value);
         const symbol = symbolInput.value.toUpperCase();
-        
+
         if (value && symbol) {
             // Use mock prices for common assets (in real implementation, fetch from price API)
             const prices = {
@@ -773,7 +781,7 @@ class YieldSwarmUI {
                 'USDT': 1,
                 'DAI': 1
             };
-            
+
             const price = prices[symbol] || 1;
             const amount = value / price;
             amountInput.value = amount.toFixed(6);
@@ -787,10 +795,10 @@ class YieldSwarmUI {
         const amountInput = document.getElementById('assetAmount');
         const valueInput = document.getElementById('assetValue');
         const symbolInput = document.getElementById('assetSymbol');
-        
+
         const amount = parseFloat(amountInput.value);
         const symbol = symbolInput.value.toUpperCase();
-        
+
         if (amount && symbol) {
             // Use mock prices for common assets
             const prices = {
@@ -802,10 +810,195 @@ class YieldSwarmUI {
                 'USDT': 1,
                 'DAI': 1
             };
-            
+
             const price = prices[symbol] || 1;
             const value = amount * price;
             valueInput.value = value.toFixed(2);
+        }
+    }
+
+    /**
+     * Refresh real-time data
+     */
+    async refreshRealTimeData() {
+        try {
+            this.showNotification('Fetching latest protocol data...', 'info');
+            this.setButtonLoading('refreshDataBtn', true);
+
+            // Fetch comprehensive real-time data
+            const data = await this.api.getRealTimeData('comprehensive');
+
+            // Update dashboard with real data
+            this.updateDashboardWithRealData(data);
+
+            this.showNotification('Real-time data updated successfully!', 'success');
+        } catch (error) {
+            console.error('Failed to refresh real-time data:', error);
+            this.showNotification(`Failed to refresh data: ${error.message}`, 'error');
+        } finally {
+            this.setButtonLoading('refreshDataBtn', false);
+        }
+    }
+
+    /**
+     * Show live yield opportunities
+     */
+    async showLiveYields() {
+        try {
+            this.showNotification('Fetching live yield opportunities...', 'info');
+
+            const yields = await this.api.getLiveYieldOpportunities();
+            this.displayLiveYields(yields);
+
+            this.showNotification(`Found ${yields.length} live yield opportunities!`, 'success');
+        } catch (error) {
+            console.error('Failed to fetch live yields:', error);
+            this.showNotification(`Failed to fetch yields: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Update current prices
+     */
+    async updateCurrentPrices() {
+        try {
+            this.showNotification('Updating token prices...', 'info');
+
+            const prices = await this.api.getCurrentPrices();
+            this.displayCurrentPrices(prices);
+
+            this.showNotification('Token prices updated!', 'success');
+        } catch (error) {
+            console.error('Failed to update prices:', error);
+            this.showNotification(`Failed to update prices: ${error.message}`, 'error');
+        }
+    }
+
+    /**
+     * Auto refresh data periodically
+     */
+    async autoRefreshData() {
+        if (!this.currentAgent || this.currentAgent.state !== 'RUNNING') {
+            return; // Don't auto-refresh if agent is not running
+        }
+
+        try {
+            console.log('Auto-refreshing real-time data...');
+            await this.updateCurrentPrices();
+        } catch (error) {
+            console.error('Auto refresh failed:', error);
+            // Don't show notifications for auto-refresh failures
+        }
+    }
+
+    /**
+     * Update dashboard with real-time data
+     */
+    updateDashboardWithRealData(data) {
+        if (!data || !data.data) return;
+
+        const realData = data.data;
+
+        // Update yield statistics
+        if (realData.yields) {
+            const yields = Object.values(realData.yields);
+            if (yields.length > 0) {
+                const validYields = yields.filter(y => y.apy && y.apy > 0);
+                if (validYields.length > 0) {
+                    const avgAPY = validYields.reduce((sum, y) => sum + y.apy, 0) / validYields.length;
+                    const maxAPY = Math.max(...validYields.map(y => y.apy));
+
+                    document.getElementById('currentAPY').textContent = `${avgAPY.toFixed(2)}% avg`;
+                }
+            }
+        }
+
+        // Update last refresh time
+        this.updateLastRefreshTime();
+    }
+
+    /**
+     * Display live yield opportunities  
+     */
+    displayLiveYields(yields) {
+        // Find or create yields container
+        let container = document.getElementById('liveYieldsContainer');
+        if (!container) {
+            // Create yields display section
+            const analyticsSection = document.getElementById('analytics');
+            const yieldsDiv = document.createElement('div');
+            yieldsDiv.innerHTML = `
+                <h3>🔥 Live Yield Opportunities</h3>
+                <div id="liveYieldsContainer" class="yields-grid"></div>
+            `;
+            analyticsSection.appendChild(yieldsDiv);
+            container = document.getElementById('liveYieldsContainer');
+        }
+
+        container.innerHTML = '';
+
+        yields.slice(0, 15).forEach(yieldOpp => {  // Show top 15
+            const yieldCard = document.createElement('div');
+            yieldCard.className = 'yield-card';
+
+            yieldCard.innerHTML = `
+                <div class="yield-header">
+                    <h4>${yieldOpp.protocol.toUpperCase()}</h4>
+                    <span class="chain-badge">${yieldOpp.chain}</span>
+                </div>
+                <div class="yield-details">
+                    <div class="yield-symbol">${yieldOpp.symbol}</div>
+                    <div class="yield-apy">${yieldOpp.apy.toFixed(2)}% APY</div>
+                    <div class="yield-tvl">TVL: $${this.formatCurrency(yieldOpp.tvl)}</div>
+                    <div class="yield-risk">Risk: ${yieldOpp.ilRisk}</div>
+                </div>
+            `;
+
+            container.appendChild(yieldCard);
+        });
+
+        // Show analytics section
+        this.showSection('analytics');
+    }
+
+    /**
+     * Update last refresh time display
+     */
+    updateLastRefreshTime() {
+        const timestamp = new Date().toLocaleTimeString();
+
+        // Find or create refresh indicator
+        let refreshIndicator = document.getElementById('last-refresh-time');
+        if (!refreshIndicator) {
+            refreshIndicator = document.createElement('div');
+            refreshIndicator.id = 'last-refresh-time';
+            refreshIndicator.className = 'refresh-indicator';
+            refreshIndicator.style.cssText = 'font-size: 12px; color: #666; margin-top: 5px;';
+
+            const connectionStatus = document.getElementById('connectionStatus');
+            if (connectionStatus) {
+                connectionStatus.parentNode.appendChild(refreshIndicator);
+            }
+        }
+
+        refreshIndicator.innerHTML = `
+            <i class="fas fa-clock"></i>
+            Updated: ${timestamp}
+        `;
+    }
+
+    /**
+     * Format currency for display
+     */
+    formatCurrency(value) {
+        if (value >= 1e9) {
+            return `${(value / 1e9).toFixed(2)}B`;
+        } else if (value >= 1e6) {
+            return `${(value / 1e6).toFixed(2)}M`;
+        } else if (value >= 1e3) {
+            return `${(value / 1e3).toFixed(2)}K`;
+        } else {
+            return value.toFixed(2);
         }
     }
 }
