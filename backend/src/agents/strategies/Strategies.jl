@@ -11,6 +11,11 @@ include("strategy_ai_news_scraping.jl")
 include("strategy_solana_dev_chat.jl")
 include("strategy_solana_swarm_dev.jl")
 include("strategy_yieldswarm.jl")
+include("strategy_market_making.jl")
+include("strategy_llm_backtesting.jl")
+include("strategy_multi_exchange.jl")
+include("strategy_agent_swarm.jl")
+include("strategy_rl_market_making.jl")
 
 using ..CommonTypes: StrategySpecification
 
@@ -35,5 +40,10 @@ register_strategy(STRATEGY_AI_NEWS_SCRAPING_SPECIFICATION)
 register_strategy(STRATEGY_SOLANA_DEV_CHAT_SPECIFICATION)
 register_strategy(STRATEGY_SOLANA_SWARM_DEV_SPECIFICATION)
 register_strategy(STRATEGY_YIELDSWARM_SPECIFICATION)
+register_strategy(STRATEGY_MARKET_MAKING_SPECIFICATION)
+register_strategy(STRATEGY_LLM_BACKTESTING_SPECIFICATION)
+register_strategy(STRATEGY_MULTI_EXCHANGE_SPECIFICATION)
+register_strategy(STRATEGY_AGENT_SWARM_SPECIFICATION)
+register_strategy(STRATEGY_RL_MARKET_MAKING_SPECIFICATION)
 
 end

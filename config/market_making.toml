@@ -1,0 +1,236 @@
+# JuliaOS Market Making Configuration
+# Advanced market making parameters and settings
+
+[general]
+# System-wide settings
+system_name = "JuliaOS Market Making"
+version = "1.0.0"
+debug_mode = false
+log_level = "INFO"
+
+[strategy]
+# Core market making parameters
+symbols = ["ETHUSDT", "BTCUSDT", "SOLUSDT", "BNBUSDT", "ADAUSDT"]
+base_spread_pct = 0.15          # Base bid spread percentage
+ask_spread_pct = 0.15           # Base ask spread percentage  
+order_levels = 3                # Number of order levels per side
+order_amount = 0.1              # Base order size
+max_capital = 10000.0           # Maximum capital to deploy (USDT)
+leverage = 20                   # Leverage multiplier
+refresh_interval = 600          # Order refresh interval (seconds)
+inventory_target_pct = 50.0     # Target inventory percentage
+
+# Dynamic features
+enable_dynamic_spreads = true   # Adjust spreads based on volatility
+enable_inventory_skew = true    # Skew orders based on inventory
+enable_stop_loss = true         # Enable stop-loss orders
+enable_take_profit = true       # Enable take-profit orders
+enable_cross_exchange = true    # Enable cross-exchange arbitrage
+
+# Advanced parameters
+volatility_adjustment_factor = 50.0    # Volatility impact on spreads
+volume_adjustment_threshold = 100000.0 # Volume threshold for adjustments
+inventory_skew_factor = 2.0            # Maximum inventory skew multiplier
+min_spread_pct = 0.05                  # Minimum spread percentage
+max_spread_pct = 2.0                   # Maximum spread percentage
+
+[risk_management]
+# Core risk limits
+max_drawdown = 0.15             # Maximum portfolio drawdown (15%)
+max_position_size = 100000.0    # Maximum single position size (USDT)
+max_daily_loss = 1000.0         # Maximum daily loss limit (USDT)
+max_correlation = 0.8           # Maximum correlation between strategies
+var_95_limit = 0.05             # 95% Value at Risk limit
+position_limit_pct = 0.5        # Max position as % of capital
+
+# Stop-loss and take-profit
+stop_loss_threshold = 0.006     # Stop-loss threshold (0.6% for 20x leverage)
+take_profit_threshold = 0.005   # Take-profit threshold (0.5% for 20x leverage)
+trailing_stop_pct = 0.002       # Trailing stop percentage
+
+# Emergency protocols
+emergency_drawdown_threshold = 0.20    # Emergency stop at 20% drawdown
+emergency_var_threshold = 0.10         # Emergency stop at 10% VaR
+emergency_correlation_threshold = 0.95  # Emergency stop at 95% correlation
+
+[exchanges]
+# Exchange-specific settings
+
+[exchanges.binance_futures]
+enabled = true
+base_url = "https://testnet.binancefuture.com"
+testnet = true
+max_orders_per_symbol = 10
+max_position_per_symbol = 50000.0
+commission_rate = 0.0004
+maker_fee_rate = 0.0002
+taker_fee_rate = 0.0004
+
+[exchanges.bybit_futures]
+enabled = true  
+base_url = "https://api-testnet.bybit.com"
+testnet = true
+max_orders_per_symbol = 10
+max_position_per_symbol = 50000.0
+commission_rate = 0.0006
+maker_fee_rate = 0.0002
+taker_fee_rate = 0.0006
+
+[exchanges.okx_futures]
+enabled = false
+base_url = "https://www.okx.com"
+testnet = false
+max_orders_per_symbol = 8
+max_position_per_symbol = 30000.0
+commission_rate = 0.0005
+
+[llm_optimization]
+# LLM-powered optimization settings
+model = "gpt-4"
+api_endpoint = "https://api.openai.com/v1/chat/completions"
+temperature = 0.7
+max_tokens = 1500
+optimization_objective = "multi_objective"  # "sharpe_ratio", "total_return", "calmar_ratio", "multi_objective"
+
+# Genetic algorithm parameters
+max_generations = 25
+population_size = 60
+mutation_rate = 0.15
+crossover_rate = 0.8
+elitism_rate = 0.2
+
+# Backtesting parameters
+backtest_start_date = "2024-01-01"
+backtest_end_date = "2024-12-31"
+backtest_timeframe = "1h"
+initial_capital = 10000.0
+commission_rate = 0.0004
+slippage_rate = 0.0001
+
+# LLM guidance frequency
+llm_guidance_frequency = 5      # Every 5 generations
+llm_suggestion_weight = 0.3     # 30% weight for LLM suggestions
+
+[agent_swarm]
+# Multi-agent coordination settings
+num_mm_agents = 3               # Number of market making agents
+num_arb_agents = 2              # Number of arbitrage agents
+num_yield_agents = 1            # Number of yield farming agents
+num_gov_agents = 1              # Number of governance agents
+num_risk_agents = 1             # Number of risk management agents
+
+# Coordination settings
+enable_consensus = true         # Enable consensus-based decisions
+consensus_threshold = 0.67      # 67% agreement required
+coordination_frequency = 300    # Coordination check frequency (seconds)
+performance_reporting = true    # Enable performance reporting
+resource_sharing = true         # Enable resource sharing between agents
+
+# Communication settings
+message_queue_size = 1000       # Maximum message queue size
+message_timeout = 300           # Message timeout (seconds)
+priority_levels = 5             # Number of priority levels (1-5)
+broadcast_interval = 60         # Broadcast interval (seconds)
+
+# Specialization settings
+[agent_swarm.market_making_agents]
+agent_001 = { specialization = "high_frequency", symbols = ["ETHUSDT", "BTCUSDT"], capital_allocation = 0.4 }
+agent_002 = { specialization = "cross_exchange", symbols = ["SOLUSDT", "BNBUSDT"], capital_allocation = 0.3 }
+agent_003 = { specialization = "long_term", symbols = ["ADAUSDT", "DOTUSDT"], capital_allocation = 0.3 }
+
+[agent_swarm.arbitrage_agents]
+agent_001 = { types = ["cex_cex", "cex_dex"], min_profit = 0.001, max_position = 25000.0 }
+agent_002 = { types = ["triangular", "cross_chain"], min_profit = 0.002, max_position = 15000.0 }
+
+[defi_integration]
+# DeFi and cross-chain settings
+enable_yield_farming = true
+enable_governance_participation = true
+enable_cross_chain_arbitrage = true
+enable_flash_loans = false      # Disabled by default due to complexity
+
+# Supported protocols
+supported_dexes = ["uniswap_v3", "pancakeswap", "raydium", "sushiswap"]
+supported_lending = ["aave", "compound", "radiant"]
+supported_bridges = ["stargate", "layerzero", "wormhole"]
+
+# Yield farming parameters
+min_apr_threshold = 0.08        # Minimum 8% APR
+max_impermanent_loss = 0.10     # Maximum 10% IL risk
+auto_compound = true            # Auto-compound rewards
+rebalance_threshold = 0.05      # 5% rebalance threshold
+
+# Governance participation
+min_voting_power = 100.0        # Minimum tokens required to vote
+auto_vote = false               # Manual voting by default
+delegation_enabled = true       # Enable vote delegation
+research_before_vote = true     # Research proposals before voting
+
+[monitoring]
+# Performance and risk monitoring
+update_frequency = 60           # Update frequency (seconds)
+alert_frequency = 300           # Alert check frequency (seconds)
+report_frequency = 3600         # Report generation frequency (seconds)
+
+# Performance thresholds
+min_sharpe_ratio = 0.5          # Minimum acceptable Sharpe ratio
+min_win_rate = 0.4              # Minimum acceptable win rate
+max_consecutive_losses = 5      # Maximum consecutive losses
+
+# Risk alert thresholds
+drawdown_warning = 0.08         # Warning at 8% drawdown
+drawdown_alert = 0.12           # Alert at 12% drawdown
+var_warning = 0.03              # Warning at 3% VaR
+var_alert = 0.05                # Alert at 5% VaR
+
+# Notification settings
+enable_email_alerts = false
+enable_telegram_alerts = false
+enable_discord_alerts = false
+enable_console_alerts = true
+
+[logging]
+# Logging configuration
+log_file = "market_making.log"
+max_log_size_mb = 100
+log_retention_days = 30
+log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Log levels by component
+strategy_log_level = "INFO"
+risk_log_level = "WARNING" 
+agent_log_level = "INFO"
+exchange_log_level = "WARNING"
+optimization_log_level = "INFO"
+
+[data_sources]
+# Market data and analytics
+primary_data_source = "binance"
+backup_data_sources = ["bybit", "okx", "coingecko"]
+sentiment_sources = ["twitter", "reddit", "fear_greed_index"]
+news_sources = ["coindesk", "cointelegraph", "defipulse"]
+
+# Data update frequencies
+price_update_frequency = 1      # 1 second for price data
+orderbook_update_frequency = 5  # 5 seconds for orderbook
+sentiment_update_frequency = 300 # 5 minutes for sentiment
+news_update_frequency = 600     # 10 minutes for news
+
+[advanced]
+# Advanced features
+enable_machine_learning = true
+enable_reinforcement_learning = false  # Experimental
+enable_neural_networks = false         # Experimental
+enable_quantum_computing = false       # Future feature
+
+# Experimental features
+enable_predictive_analytics = true
+enable_market_regime_detection = true
+enable_volatility_forecasting = true
+enable_correlation_prediction = true
+
+# Performance optimization
+enable_parallel_processing = true
+max_worker_threads = 4
+enable_gpu_acceleration = false
+memory_limit_gb = 8
