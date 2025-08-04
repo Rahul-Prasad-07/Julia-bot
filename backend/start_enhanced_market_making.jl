@@ -44,6 +44,13 @@ using JuliaOSBackend.Agents.Strategies
 using JuliaOSBackend.Agents.CommonTypes
 import JuliaOSBackend.Agents.CommonTypes: AgentContext
 
+# Import PnL tracking function for comprehensive reports
+try
+    using JuliaOSBackend.Agents.Strategies: generate_performance_report
+catch e
+    println("⚠️ PnL tracking functions not yet available - will be accessible after strategy initialization")
+end
+
 println("🚀 Starting Enhanced JuliaOS Market Making System")
 println("="^60)
 
@@ -213,14 +220,15 @@ function rl_trading_menu(config, strategy_spec, context)
         println("9. 📈 Performance Analytics")
         println("10. ⚙️  Adjust Parameters")
         println("11. 🧪 Test Mode (Single Iteration)")
-        println("12. ❌ Exit")
+        println("12. 💰 Show Comprehensive PnL Report")
+        println("13. ❌ Exit")
         println("="^60)
         println("💡 24/7 Mode: Cancels ALL orders → Creates fresh orders every 30s")
         println("💡 Tip: Trading continues until manually stopped with option 3!")
         println("🚨 Emergency: Use option 4 if you have margin issues from stuck orders!")
         println("="^60)
         
-        print("Enter your choice (1-12): ")
+        print("Enter your choice (1-13): ")
         choice = readline()
         
         if choice == "1"
@@ -302,7 +310,6 @@ function rl_trading_menu(config, strategy_spec, context)
             strategy_spec.run(config, context, input)
             
         elseif choice == "8"
-        elseif choice == "8"
             println("\n📋 Recent Trading Logs:")
             println("="^50)
             if !isempty(context.logs)
@@ -358,12 +365,26 @@ function rl_trading_menu(config, strategy_spec, context)
             strategy_spec.run(config, context, input)
             
         elseif choice == "12"
-        elseif choice == "12"
+            println("\n💰 Comprehensive Trading Performance Report")
+            println("="^60)
+            
+            try
+                # Generate the comprehensive report
+                performance_report = generate_performance_report()
+                println(performance_report)
+                
+            catch e
+                println("❌ Error generating PnL report: $e")
+                println("💡 Make sure you have started trading at least once to initialize PnL tracking")
+                println("💡 If PnL tracking is not initialized, start trading with option 1 first")
+            end
+            
+        elseif choice == "13"
             println("\n👋 Exiting RL trading system...")
             break
             
         else
-            println("❌ Invalid choice. Please enter 1-12.")
+            println("❌ Invalid choice. Please enter 1-13.")
         end
         
         println("\nPress Enter to continue...")

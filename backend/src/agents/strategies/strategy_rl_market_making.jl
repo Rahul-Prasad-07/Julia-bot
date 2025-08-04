@@ -126,12 +126,370 @@ mutable struct BacktestEngine
     end
 end
 
+# Trade record for PnL tracking
+mutable struct TradeRecord
+    trade_id::Int
+    symbol::String
+    side::String
+    entry_price::Float64
+    exit_price::Float64
+    quantity::Float64
+    entry_time::DateTime
+    exit_time::DateTime
+    realized_pnl::Float64
+    fees::Float64
+    net_pnl::Float64
+    
+    function TradeRecord()
+        new(0, "", "", 0.0, 0.0, 0.0, now(), now(), 0.0, 0.0, 0.0)
+    end
+end
+
+# Comprehensive PnL tracking system
+mutable struct PnLTracker
+    # Account balances
+    initial_balance_usdt::Float64
+    current_balance_usdt::Float64
+    initial_balance_base::Float64  # e.g., ETH balance
+    current_balance_base::Float64
+    
+    # Trading metrics
+    start_time::DateTime
+    last_update_time::DateTime
+    total_trades::Int
+    winning_trades::Int
+    losing_trades::Int
+    
+    # PnL metrics
+    total_realized_pnl::Float64
+    total_unrealized_pnl::Float64
+    total_fees_paid::Float64
+    best_trade_pnl::Float64
+    worst_trade_pnl::Float64
+    
+    # Performance metrics
+    max_balance::Float64
+    max_drawdown::Float64
+    current_drawdown::Float64
+    daily_pnl_history::Vector{Float64}
+    hourly_pnl_history::Vector{Float64}
+    
+    # Trade records
+    completed_trades::Vector{TradeRecord}
+    open_positions::Dict{String, Dict{String, Any}}  # symbol -> position info
+    
+    # Risk metrics
+    sharpe_ratio::Float64
+    sortino_ratio::Float64
+    profit_factor::Float64
+    win_rate::Float64
+    avg_win::Float64
+    avg_loss::Float64
+    
+    function PnLTracker()
+        new(
+            0.0, 0.0, 0.0, 0.0,  # balances
+            now(), now(), 0, 0, 0,  # time and trade counts
+            0.0, 0.0, 0.0, 0.0, 0.0,  # PnL metrics
+            0.0, 0.0, 0.0, Float64[], Float64[],  # performance metrics
+            TradeRecord[], Dict{String, Dict{String, Any}}(),  # trade records
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0  # risk metrics
+        )
+    end
+end
+
+# Global PnL tracker instance
+const GLOBAL_PNL_TRACKER = PnLTracker()
+
 # HMAC-SHA256 signature generation
 function hmac_sha256_rl(key::String, message::String)
     key_bytes = Vector{UInt8}(key)
     message_bytes = Vector{UInt8}(message)
     signature = SHA.hmac_sha256(key_bytes, message_bytes)
     return bytes2hex(signature)
+end
+
+# ===== PnL TRACKING FUNCTIONS =====
+
+# Initialize PnL tracker with starting balances
+function initialize_pnl_tracker(api_key::String, api_secret::String)
+    try
+        println("💰 Initializing PnL Tracker...")
+        
+        # Get current account balances
+        account_data = binance_api_request_rl("/fapi/v2/account", "GET", api_key, api_secret)
+        
+        if isa(account_data, Dict) && haskey(account_data, "error")
+            println("❌ Failed to get account data: $(account_data["error"])")
+            return false
+        end
+        
+        # Extract USDT balance
+        usdt_balance = 0.0
+        eth_balance = 0.0
+        
+        if haskey(account_data, "assets")
+            for asset in account_data["assets"]
+                if asset["asset"] == "USDT"
+                    usdt_balance = parse(Float64, string(asset["walletBalance"]))
+                elseif asset["asset"] == "ETH"
+                    eth_balance = parse(Float64, string(asset["walletBalance"]))
+                end
+            end
+        end
+        
+        # Initialize tracker
+        GLOBAL_PNL_TRACKER.initial_balance_usdt = usdt_balance
+        GLOBAL_PNL_TRACKER.current_balance_usdt = usdt_balance
+        GLOBAL_PNL_TRACKER.initial_balance_base = eth_balance
+        GLOBAL_PNL_TRACKER.current_balance_base = eth_balance
+        GLOBAL_PNL_TRACKER.start_time = now()
+        GLOBAL_PNL_TRACKER.last_update_time = now()
+        GLOBAL_PNL_TRACKER.max_balance = usdt_balance
+        
+        println("✅ PnL Tracker Initialized:")
+        println("   💵 Initial USDT Balance: \$$(round(usdt_balance, digits=2))")
+        println("   🪙 Initial ETH Balance: $(round(eth_balance, digits=6)) ETH")
+        println("   ⏰ Start Time: $(Dates.format(GLOBAL_PNL_TRACKER.start_time, "yyyy-mm-dd HH:MM:SS"))")
+        
+        return true
+        
+    catch e
+        println("❌ Error initializing PnL tracker: $e")
+        return false
+    end
+end
+
+# Update account balances and calculate PnL
+function update_pnl_tracker(api_key::String, api_secret::String)
+    try
+        # Get current account balances
+        account_data = binance_api_request_rl("/fapi/v2/account", "GET", api_key, api_secret)
+        
+        if isa(account_data, Dict) && haskey(account_data, "error")
+            return false
+        end
+        
+        # Extract current balances
+        usdt_balance = 0.0
+        eth_balance = 0.0
+        
+        if haskey(account_data, "assets")
+            for asset in account_data["assets"]
+                if asset["asset"] == "USDT"
+                    usdt_balance = parse(Float64, string(asset["walletBalance"]))
+                elseif asset["asset"] == "ETH"
+                    eth_balance = parse(Float64, string(asset["walletBalance"]))
+                end
+            end
+        end
+        
+        # Update tracker
+        old_balance = GLOBAL_PNL_TRACKER.current_balance_usdt
+        GLOBAL_PNL_TRACKER.current_balance_usdt = usdt_balance
+        GLOBAL_PNL_TRACKER.current_balance_base = eth_balance
+        GLOBAL_PNL_TRACKER.last_update_time = now()
+        
+        # Update max balance and drawdown
+        if usdt_balance > GLOBAL_PNL_TRACKER.max_balance
+            GLOBAL_PNL_TRACKER.max_balance = usdt_balance
+        end
+        
+        # Calculate drawdown
+        current_dd = (GLOBAL_PNL_TRACKER.max_balance - usdt_balance) / GLOBAL_PNL_TRACKER.max_balance
+        GLOBAL_PNL_TRACKER.current_drawdown = current_dd
+        GLOBAL_PNL_TRACKER.max_drawdown = max(GLOBAL_PNL_TRACKER.max_drawdown, current_dd)
+        
+        # Store hourly PnL
+        balance_change = usdt_balance - old_balance
+        push!(GLOBAL_PNL_TRACKER.hourly_pnl_history, balance_change)
+        
+        # Keep only last 168 hours (7 days)
+        if length(GLOBAL_PNL_TRACKER.hourly_pnl_history) > 168
+            GLOBAL_PNL_TRACKER.hourly_pnl_history = GLOBAL_PNL_TRACKER.hourly_pnl_history[end-167:end]
+        end
+        
+        return true
+        
+    catch e
+        println("❌ Error updating PnL tracker: $e")
+        return false
+    end
+end
+
+# Record a completed trade
+function record_trade(symbol::String, side::String, entry_price::Float64, exit_price::Float64, 
+                     quantity::Float64, entry_time::DateTime, exit_time::DateTime, 
+                     fees::Float64 = 0.0)
+    try
+        trade = TradeRecord()
+        trade.trade_id = GLOBAL_PNL_TRACKER.total_trades + 1
+        trade.symbol = symbol
+        trade.side = side
+        trade.entry_price = entry_price
+        trade.exit_price = exit_price
+        trade.quantity = quantity
+        trade.entry_time = entry_time
+        trade.exit_time = exit_time
+        trade.fees = fees
+        
+        # Calculate PnL
+        if side == "BUY"  # Long position
+            trade.realized_pnl = (exit_price - entry_price) * quantity
+        else  # Short position
+            trade.realized_pnl = (entry_price - exit_price) * quantity
+        end
+        
+        trade.net_pnl = trade.realized_pnl - fees
+        
+        # Update tracker
+        GLOBAL_PNL_TRACKER.total_trades += 1
+        GLOBAL_PNL_TRACKER.total_realized_pnl += trade.net_pnl
+        GLOBAL_PNL_TRACKER.total_fees_paid += fees
+        
+        if trade.net_pnl > 0
+            GLOBAL_PNL_TRACKER.winning_trades += 1
+        else
+            GLOBAL_PNL_TRACKER.losing_trades += 1
+        end
+        
+        # Update best/worst trade
+        GLOBAL_PNL_TRACKER.best_trade_pnl = max(GLOBAL_PNL_TRACKER.best_trade_pnl, trade.net_pnl)
+        GLOBAL_PNL_TRACKER.worst_trade_pnl = min(GLOBAL_PNL_TRACKER.worst_trade_pnl, trade.net_pnl)
+        
+        # Store trade
+        push!(GLOBAL_PNL_TRACKER.completed_trades, trade)
+        
+        println("📊 Trade Recorded: $(side) $(quantity) $(symbol) @ \$$(entry_price) → \$$(exit_price) | P&L: \$$(round(trade.net_pnl, digits=2))")
+        
+        return true
+        
+    catch e
+        println("❌ Error recording trade: $e")
+        return false
+    end
+end
+
+# Calculate performance metrics
+function calculate_performance_metrics()
+    try
+        if GLOBAL_PNL_TRACKER.total_trades == 0
+            return
+        end
+        
+        # Win rate
+        GLOBAL_PNL_TRACKER.win_rate = GLOBAL_PNL_TRACKER.winning_trades / GLOBAL_PNL_TRACKER.total_trades
+        
+        # Average win/loss
+        winning_trades = filter(t -> t.net_pnl > 0, GLOBAL_PNL_TRACKER.completed_trades)
+        losing_trades = filter(t -> t.net_pnl <= 0, GLOBAL_PNL_TRACKER.completed_trades)
+        
+        if !isempty(winning_trades)
+            GLOBAL_PNL_TRACKER.avg_win = mean([t.net_pnl for t in winning_trades])
+        end
+        
+        if !isempty(losing_trades)
+            GLOBAL_PNL_TRACKER.avg_loss = mean([abs(t.net_pnl) for t in losing_trades])
+        end
+        
+        # Profit factor
+        total_wins = sum([t.net_pnl for t in winning_trades])
+        total_losses = sum([abs(t.net_pnl) for t in losing_trades])
+        
+        if total_losses > 0
+            GLOBAL_PNL_TRACKER.profit_factor = total_wins / total_losses
+        end
+        
+        # Sharpe ratio (simplified)
+        if length(GLOBAL_PNL_TRACKER.hourly_pnl_history) > 1
+            returns = GLOBAL_PNL_TRACKER.hourly_pnl_history
+            avg_return = mean(returns)
+            return_std = std(returns)
+            
+            if return_std > 0
+                GLOBAL_PNL_TRACKER.sharpe_ratio = (avg_return * sqrt(8760)) / return_std  # Annualized
+            end
+        end
+        
+    catch e
+        println("❌ Error calculating performance metrics: $e")
+    end
+end
+
+# Generate comprehensive performance report
+function generate_performance_report()::String
+    calculate_performance_metrics()
+    
+    # Calculate runtime
+    runtime = now() - GLOBAL_PNL_TRACKER.start_time
+    runtime_hours = Dates.value(runtime) / (1000 * 60 * 60)
+    runtime_days = runtime_hours / 24
+    
+    # Calculate total return
+    total_return_pct = ((GLOBAL_PNL_TRACKER.current_balance_usdt - GLOBAL_PNL_TRACKER.initial_balance_usdt) / 
+                       GLOBAL_PNL_TRACKER.initial_balance_usdt) * 100
+    
+    # Calculate APY (Annual Percentage Yield)
+    apy = 0.0
+    if runtime_days > 0
+        daily_return = total_return_pct / runtime_days
+        apy = ((1 + daily_return/100)^365 - 1) * 100
+    end
+    
+    report = """
+    
+    🏆 ===== COMPREHENSIVE TRADING PERFORMANCE REPORT =====
+    
+    📅 Trading Period:
+       Start: $(Dates.format(GLOBAL_PNL_TRACKER.start_time, "yyyy-mm-dd HH:MM:SS"))
+       End:   $(Dates.format(GLOBAL_PNL_TRACKER.last_update_time, "yyyy-mm-dd HH:MM:SS"))
+       Duration: $(round(runtime_days, digits=2)) days ($(round(runtime_hours, digits=1)) hours)
+    
+    💰 Account Balances:
+       Initial USDT: \$$(round(GLOBAL_PNL_TRACKER.initial_balance_usdt, digits=2))
+       Current USDT: \$$(round(GLOBAL_PNL_TRACKER.current_balance_usdt, digits=2))
+       Balance Change: \$$(round(GLOBAL_PNL_TRACKER.current_balance_usdt - GLOBAL_PNL_TRACKER.initial_balance_usdt, digits=2))
+    
+    📈 Performance Metrics:
+       Total Return: $(round(total_return_pct, digits=2))%
+       Annualized APY: $(round(apy, digits=2))%
+       Max Balance: \$$(round(GLOBAL_PNL_TRACKER.max_balance, digits=2))
+       Max Drawdown: $(round(GLOBAL_PNL_TRACKER.max_drawdown * 100, digits=2))%
+       Current Drawdown: $(round(GLOBAL_PNL_TRACKER.current_drawdown * 100, digits=2))%
+    
+    📊 Trading Statistics:
+       Total Trades: $(GLOBAL_PNL_TRACKER.total_trades)
+       Winning Trades: $(GLOBAL_PNL_TRACKER.winning_trades)
+       Losing Trades: $(GLOBAL_PNL_TRACKER.losing_trades)
+       Win Rate: $(round(GLOBAL_PNL_TRACKER.win_rate * 100, digits=1))%
+    
+    💸 PnL Breakdown:
+       Total Realized PnL: \$$(round(GLOBAL_PNL_TRACKER.total_realized_pnl, digits=2))
+       Total Fees Paid: \$$(round(GLOBAL_PNL_TRACKER.total_fees_paid, digits=2))
+       Net PnL: \$$(round(GLOBAL_PNL_TRACKER.total_realized_pnl - GLOBAL_PNL_TRACKER.total_fees_paid, digits=2))
+       Best Trade: \$$(round(GLOBAL_PNL_TRACKER.best_trade_pnl, digits=2))
+       Worst Trade: \$$(round(GLOBAL_PNL_TRACKER.worst_trade_pnl, digits=2))
+    
+    🎯 Risk Metrics:
+       Average Win: \$$(round(GLOBAL_PNL_TRACKER.avg_win, digits=2))
+       Average Loss: \$$(round(GLOBAL_PNL_TRACKER.avg_loss, digits=2))
+       Profit Factor: $(round(GLOBAL_PNL_TRACKER.profit_factor, digits=2))
+       Sharpe Ratio: $(round(GLOBAL_PNL_TRACKER.sharpe_ratio, digits=2))
+    
+    📊 Recent Performance (Last 24 hours):
+    """
+    
+    # Add recent hourly PnL
+    if length(GLOBAL_PNL_TRACKER.hourly_pnl_history) >= 24
+        recent_24h = GLOBAL_PNL_TRACKER.hourly_pnl_history[end-23:end]
+        total_24h = sum(recent_24h)
+        report *= "       24h PnL: \$$(round(total_24h, digits=2))\n"
+        report *= "       24h Return: $(round((total_24h / GLOBAL_PNL_TRACKER.current_balance_usdt) * 100, digits=2))%\n"
+    end
+    
+    report *= "\n    ===== END REPORT =====\n"
+    
+    return report
 end
 
 # Enhanced API functions for RL strategy
@@ -164,10 +522,10 @@ function binance_api_request_rl(endpoint::String, method::String, api_key::Strin
         
         if debug
             println("🔍 API Request Debug:")
-            println("  Endpoint: $endpoint")
-            println("  URL: $base_url$endpoint")
-            println("  Query: $(query_string)")
-            println("  API Key: $(api_key[1:min(8,length(api_key))])...$(api_key[max(1,end-4):end])")
+            #println("  Endpoint: $endpoint")
+            #println("  URL: $base_url$endpoint")
+            #println("  Query: $(query_string)")
+            #println("  API Key: $(api_key[1:min(8,length(api_key))])...$(api_key[max(1,end-4):end])")
         end
         
         if method == "GET"
@@ -185,8 +543,8 @@ function binance_api_request_rl(endpoint::String, method::String, api_key::Strin
         
         if debug
             println("  Response Status: $(response.status)")
-            println("  Response Body: $(response_body[1:min(200, length(response_body))])")
-            println("  Parsed Successfully: $(typeof(parsed_result))")
+            #println("  Response Body: $(response_body[1:min(200, length(response_body))])")
+            #println("  Parsed Successfully: $(typeof(parsed_result))")
         end
         
         return parsed_result
@@ -596,7 +954,7 @@ function place_order_with_precision(symbol::String, side::String, amount::Float6
                                    api_key::String, api_secret::String)
     # Get symbol info for precision
     try
-        println("🔧 Getting exchange info for precision...")
+        #println("🔧 Getting exchange info for precision...")
         response = HTTP.get("https://testnet.binancefuture.com/fapi/v1/exchangeInfo")
         data = JSON3.read(String(response.body))
         
@@ -628,7 +986,7 @@ function place_order_with_precision(symbol::String, side::String, amount::Float6
         formatted_qty = round(max(amount, min_qty), digits=qty_precision)
         formatted_price = round(price, digits=price_precision)
         
-        println("🔧 Order formatting: Qty=$(formatted_qty) (precision=$qty_precision), Price=$(formatted_price) (precision=$price_precision)")
+        #println("🔧 Order formatting: Qty=$(formatted_qty) (precision=$qty_precision), Price=$(formatted_price) (precision=$price_precision)")
         
         params = Dict(
             "symbol" => symbol,
@@ -639,9 +997,9 @@ function place_order_with_precision(symbol::String, side::String, amount::Float6
             "price" => string(formatted_price)
         )
         
-        println("🔧 Placing order with params: $params")
+        #println("🔧 Placing order with params: $params")
         result = binance_api_request_rl("/fapi/v1/order", "POST", api_key, api_secret, params, true)  # Enable debug
-        println("🔧 Order result: $result")
+        #println("🔧 Order result: $result")
         
         return result
         
@@ -713,7 +1071,7 @@ function cancel_all_orders_rl(symbol::String, api_key::String, api_secret::Strin
         open_orders = binance_api_request_rl("/fapi/v1/openOrders", "GET", api_key, api_secret, 
                                            Dict("symbol" => symbol), true)  # Enable debug
         
-        println("🔍 DEBUG: Open orders response type: $(typeof(open_orders))")
+        #println("🔍 DEBUG: Open orders response type: $(typeof(open_orders))")
         
         # Handle error responses (when API returns Dict with error)
         if isa(open_orders, Dict) && haskey(open_orders, "error")
@@ -825,6 +1183,20 @@ function trading_loop_background(cfg::RLMarketMakingConfig, ctx::AgentContext)
             cycle_time = time() - cycle_start
             push!(ctx.logs, "⏱️ Cycle $(TRADING_CONTROL.iteration_count) completed in $(round(cycle_time, digits=1))s")
             
+            # Update PnL tracking every cycle
+            if TRADING_CONTROL.iteration_count % 2 == 0  # Update every 2 cycles (every minute)
+                if update_pnl_tracker(cfg.api_key, cfg.api_secret)
+                    # Quick PnL status
+                    current_pnl = GLOBAL_PNL_TRACKER.current_balance_usdt - GLOBAL_PNL_TRACKER.initial_balance_usdt
+                    pnl_pct = (current_pnl / GLOBAL_PNL_TRACKER.initial_balance_usdt) * 100
+                    
+                    if abs(current_pnl) > 0.01
+                        push!(ctx.logs, "💰 PnL Update: \$$(round(current_pnl, digits=2)) ($(round(pnl_pct, digits=2))%)")
+                        push!(ctx.logs, "📊 Balance: \$$(round(GLOBAL_PNL_TRACKER.current_balance_usdt, digits=2)) | Trades: $(GLOBAL_PNL_TRACKER.total_trades)")
+                    end
+                end
+            end
+            
             # Learning progress
             total_experiences = sum([length(agent.experience_buffer.states) for agent in values(RL_AGENTS)])
             avg_epsilon = mean([agent.epsilon for agent in values(RL_AGENTS)])
@@ -835,6 +1207,14 @@ function trading_loop_background(cfg::RLMarketMakingConfig, ctx::AgentContext)
             if runtime > 86400  # Log every 24 hours for monitoring
                 hours = round(runtime / 3600, digits=1)
                 push!(ctx.logs, "⏰ 24/7 Trading Status: Running for $hours hours ($(TRADING_CONTROL.iteration_count) cycles)")
+                
+                # Generate detailed performance report every 24 hours
+                performance_report = generate_performance_report()
+                for line in split(performance_report, '\n')
+                    if !isempty(strip(line))
+                        push!(ctx.logs, line)
+                    end
+                end
             end
             
             # Wait for next cycle
@@ -856,6 +1236,15 @@ function trading_loop_background(cfg::RLMarketMakingConfig, ctx::AgentContext)
         TRADING_CONTROL.is_running = false
         push!(ctx.logs, "🛑 Continuous RL trading stopped")
         push!(ctx.logs, "📊 Final Stats: $(TRADING_CONTROL.iteration_count) cycles, $(round((time() - TRADING_CONTROL.start_time)/60, digits=1))min runtime")
+        
+        # Generate final comprehensive performance report
+        push!(ctx.logs, "💰 Generating Final Performance Report...")
+        final_report = generate_performance_report()
+        for line in split(final_report, '\n')
+            if !isempty(strip(line))
+                push!(ctx.logs, line)
+            end
+        end
         
         # Cancel all remaining orders
         for symbol in cfg.symbols
@@ -886,6 +1275,15 @@ function start_continuous_rl_trading(cfg::RLMarketMakingConfig, ctx::AgentContex
     push!(ctx.logs, "📊 Trading Config: Symbols=$(cfg.symbols), Cycle=30s, Mode=24/7")
     push!(ctx.logs, "💡 Trading will run 24/7 until manually stopped!")
     push!(ctx.logs, "🔄 Each cycle: Cancel ALL orders → Create fresh orders → Wait 30s → Repeat")
+    
+    # Initialize PnL Tracker
+    push!(ctx.logs, "💰 Initializing comprehensive PnL tracking system...")
+    if initialize_pnl_tracker(cfg.api_key, cfg.api_secret)
+        push!(ctx.logs, "✅ PnL Tracker initialized successfully!")
+        push!(ctx.logs, "📊 Tracking: Balance changes, PnL, APY, Sharpe ratio, Win rate, Drawdown")
+    else
+        push!(ctx.logs, "⚠️ PnL Tracker initialization failed - continuing without detailed tracking")
+    end
     
     # Initialize RL agents for each symbol
     for symbol in cfg.symbols
