@@ -318,6 +318,9 @@ docs/_themes/
 /SECURITY.md
 /SWARM_ALGORITHMS_IMPLEMENTATION.md
 
+!/AI_SWARM_TRADING_SYSTEM_COMPLETE_REPORT.md
+!/AI_SWARM_SYSTEM_FLOW_DIAGRAM.md
+
 # Ignore context file
 juliaos-context.mdc
 
