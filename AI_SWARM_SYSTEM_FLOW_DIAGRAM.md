@@ -6,24 +6,24 @@
 graph TB
     subgraph "🚀 INITIALIZATION PHASE"
         START[System Start] --> ENV[Load Environment Variables]
-        ENV --> API_KEYS[Verify API Keys<br/>• Binance API<br/>• Groq LLM]
-        API_KEYS --> INIT_AGENTS[Initialize 4 AI Agents<br/>🧠 Market Analyzer<br/>🛡️ Risk Manager<br/>⚙️ Strategy Optimizer<br/>⚡ Execution Agent]
-        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks<br/>• MarketAnalysisNet<br/>• TradingDQN (4x)<br/>• Experience Replay]
-        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus<br/>• Democratic Voting<br/>• Weighted Opinions<br/>• 65% Threshold]
+        ENV -->         API_KEYS[Verify API Keys<br/>Binance API<br/>Groq LLM]
+        API_KEYS -->         INIT_AGENTS[Initialize 4 AI Agents<br/>Market Analyzer<br/>Risk Manager<br/>Strategy Optimizer<br/>Execution Agent]
+        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks<br/>MarketAnalysisNet<br/>TradingDQN 4x<br/>Experience Replay]
+        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus<br/>Democratic Voting<br/>Weighted Opinions<br/>65% Threshold]
     end
 
     subgraph "🔄 MAIN TRADING LOOP (Every 30s)"
         LOOP_START[Trading Iteration Start] --> FETCH_DATA[Fetch Real Market Data<br/>📊 ETHUSDT Price<br/>📈 Volume & Spreads<br/>🕐 Order Book]
         
         subgraph "🧠 AI ANALYSIS PHASE"
-            FETCH_DATA --> MARKET_FEATURES[Extract Market Features<br/>20 Features:<br/>• Price, Volume, Spreads<br/>• Technical Indicators<br/>• Time-based Features]
+            FETCH_DATA --> MARKET_FEATURES[Extract Market Features<br/>20 Features<br/>Price Volume Spreads<br/>Technical Indicators<br/>Time-based Features]
             MARKET_FEATURES --> NEURAL_ANALYSIS[Neural Network Analysis<br/>MarketAnalysisNet(20→64→64→5)<br/>Output: Market Sentiment]
             NEURAL_ANALYSIS --> GROQ_LLM[Groq LLM Sentiment<br/>meta-llama/llama-4-scout<br/>Prompt: Market Analysis<br/>Output: Sentiment Score]
             GROQ_LLM --> COMBINE_AI[Combine AI Signals<br/>NN + LLM Fusion<br/>Weighted Average<br/>Final Action Signal]
         end
         
         subgraph "📋 PROPOSAL GENERATION"
-            COMBINE_AI --> GENERATE_PROPOSALS[Generate Trading Proposals<br/>• Real Market Prices<br/>• Multi-level Orders<br/>• Dynamic Sizing]
+            COMBINE_AI --> GENERATE_PROPOSALS[Generate Trading Proposals<br/>Real Market Prices<br/>Multi-level Orders<br/>Dynamic Sizing]
             GENERATE_PROPOSALS --> PROPOSAL_LIST[Trading Proposals<br/>Level 1: BUY 0.001 @ $3650<br/>Level 2: BUY 0.001 @ $3645<br/>Level 3: BUY 0.001 @ $3640]
         end
         
@@ -90,22 +90,22 @@ graph TB
 ```mermaid
 graph LR
     subgraph "📊 Market Analysis Network"
-        INPUT1[Market Features<br/>20 dimensions<br/>• Price, Volume<br/>• Technical Indicators<br/>• Time Features] --> DENSE1[Dense Layer<br/>20 → 64<br/>ReLU Activation]
+        INPUT1[Market Features<br/>20 dimensions<br/>Price Volume<br/>Technical Indicators<br/>Time Features] --> DENSE1[Dense Layer<br/>20 to 64<br/>ReLU Activation]
         DENSE1 --> DROPOUT1[Dropout 0.2<br/>Regularization]
-        DROPOUT1 --> DENSE2[Dense Layer<br/>64 → 64<br/>ReLU Activation]
+        DROPOUT1 --> DENSE2[Dense Layer<br/>64 to 64<br/>ReLU Activation]
         DENSE2 --> DROPOUT2[Dropout 0.2<br/>Regularization]
-        DROPOUT2 --> OUTPUT1[Output Layer<br/>64 → 5<br/>Softmax<br/>[strong_sell, sell, hold, buy, strong_buy]]
+        DROPOUT2 --> OUTPUT1[Output Layer<br/>64 to 5<br/>Softmax<br/>Actions: sell hold buy]
     end
 
     subgraph "🤖 Deep Q-Network (DQN)"
-        INPUT2[State Features<br/>12-18 dimensions<br/>• Risk Metrics<br/>• Portfolio State<br/>• Market Conditions] --> DENSE3[Dense Layer<br/>Input → 128<br/>ReLU Activation]
-        DENSE3 --> DENSE4[Dense Layer<br/>128 → 128<br/>ReLU Activation]
-        DENSE4 --> OUTPUT2[Q-Values Output<br/>128 → Actions<br/>Action Values]
+        INPUT2[State Features<br/>12-18 dimensions<br/>Risk Metrics<br/>Portfolio State<br/>Market Conditions] --> DENSE3[Dense Layer<br/>Input to 128<br/>ReLU Activation]
+        DENSE3 --> DENSE4[Dense Layer<br/>128 to 128<br/>ReLU Activation]
+        DENSE4 --> OUTPUT2[Q-Values Output<br/>128 to Actions<br/>Action Values]
     end
 
     subgraph "🔄 Experience Replay System"
         EXPERIENCE[Experience Buffer<br/>Store: (state, action, reward, next_state)<br/>Size: 2000 experiences] --> BATCH[Random Batch<br/>Sample 32 experiences<br/>For training]
-        BATCH --> TRAINING[Neural Network Training<br/>• ADAM Optimizer<br/>• Target Network Updates<br/>• Loss Minimization]
+        BATCH --> TRAINING[Neural Network Training<br/>ADAM Optimizer<br/>Target Network Updates<br/>Loss Minimization]
     end
 
     OUTPUT1 --> MARKET_SIGNAL[Market Signal<br/>Confidence Score]
