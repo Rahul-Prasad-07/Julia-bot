@@ -6,54 +6,54 @@
 graph TB
     subgraph "🚀 INITIALIZATION PHASE"
         START[System Start] --> ENV[Load Environment Variables]
-        ENV --> API_KEYS[Verify API Keys<br/>• Binance API<br/>• Groq LLM]
-        API_KEYS --> INIT_AGENTS[Initialize 4 AI Agents<br/>🧠 Market Analyzer<br/>🛡️ Risk Manager<br/>⚙️ Strategy Optimizer<br/>⚡ Execution Agent]
-        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks<br/>• MarketAnalysisNet<br/>• TradingDQN (4x)<br/>• Experience Replay]
-        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus<br/>• Democratic Voting<br/>• Weighted Opinions<br/>• 65% Threshold]
+        ENV --> API_KEYS[Verify API Keys<br/>Binance API<br/>Groq LLM]
+        API_KEYS --> INIT_AGENTS[Initialize 4 AI Agents<br/>Market Analyzer<br/>Risk Manager<br/>Strategy Optimizer<br/>Execution Agent]
+        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks<br/>MarketAnalysisNet<br/>TradingDQN 4x<br/>Experience Replay]
+        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus<br/>Democratic Voting<br/>Weighted Opinions<br/>65% Threshold]
     end
 
     subgraph "🔄 MAIN TRADING LOOP (Every 30s)"
-        LOOP_START[Trading Iteration Start] --> FETCH_DATA[Fetch Real Market Data<br/>📊 ETHUSDT Price<br/>📈 Volume & Spreads<br/>🕐 Order Book]
+        LOOP_START[Trading Iteration Start] --> FETCH_DATA[Fetch Real Market Data<br/>ETHUSDT Price<br/>Volume and Spreads<br/>Order Book]
         
         subgraph "🧠 AI ANALYSIS PHASE"
-            FETCH_DATA --> MARKET_FEATURES[Extract Market Features<br/>20 Features:<br/>• Price, Volume, Spreads<br/>• Technical Indicators<br/>• Time-based Features]
-            MARKET_FEATURES --> NEURAL_ANALYSIS[Neural Network Analysis<br/>MarketAnalysisNet(20→64→64→5)<br/>Output: Market Sentiment]
-            NEURAL_ANALYSIS --> GROQ_LLM[Groq LLM Sentiment<br/>meta-llama/llama-4-scout<br/>Prompt: Market Analysis<br/>Output: Sentiment Score]
-            GROQ_LLM --> COMBINE_AI[Combine AI Signals<br/>NN + LLM Fusion<br/>Weighted Average<br/>Final Action Signal]
+            FETCH_DATA --> MARKET_FEATURES[Extract Market Features<br/>20 Features<br/>Price Volume Spreads<br/>Technical Indicators<br/>Time-based Features]
+            MARKET_FEATURES --> NEURAL_ANALYSIS[Neural Network Analysis<br/>MarketAnalysisNet 20-64-64-5<br/>Output Market Sentiment]
+            NEURAL_ANALYSIS --> GROQ_LLM[Groq LLM Sentiment<br/>meta-llama llama-4-scout<br/>Prompt Market Analysis<br/>Output Sentiment Score]
+            GROQ_LLM --> COMBINE_AI[Combine AI Signals<br/>NN plus LLM Fusion<br/>Weighted Average<br/>Final Action Signal]
         end
         
         subgraph "📋 PROPOSAL GENERATION"
-            COMBINE_AI --> GENERATE_PROPOSALS[Generate Trading Proposals<br/>• Real Market Prices<br/>• Multi-level Orders<br/>• Dynamic Sizing]
-            GENERATE_PROPOSALS --> PROPOSAL_LIST[Trading Proposals<br/>Level 1: BUY 0.001 @ $3650<br/>Level 2: BUY 0.001 @ $3645<br/>Level 3: BUY 0.001 @ $3640]
+            COMBINE_AI --> GENERATE_PROPOSALS[Generate Trading Proposals<br/>Real Market Prices<br/>Multi-level Orders<br/>Dynamic Sizing]
+            GENERATE_PROPOSALS --> PROPOSAL_LIST[Trading Proposals<br/>Level 1 BUY 0.001 at 3650<br/>Level 2 BUY 0.001 at 3645<br/>Level 3 BUY 0.001 at 3640]
         end
         
         subgraph "🛡️ RISK ASSESSMENT"
-            PROPOSAL_LIST --> RISK_FEATURES[Extract Risk Features<br/>12 Features:<br/>• Volatility, Position Size<br/>• Portfolio Exposure<br/>• Time Factors]
-            RISK_FEATURES --> RISK_DQN[Risk Manager DQN<br/>TradingDQN(12→128→128→5)<br/>Actions: Reject/Reduce/Approve]
+            PROPOSAL_LIST --> RISK_FEATURES[Extract Risk Features<br/>12 Features<br/>Volatility Position Size<br/>Portfolio Exposure<br/>Time Factors]
+            RISK_FEATURES --> RISK_DQN[Risk Manager DQN<br/>TradingDQN 12-128-128-5<br/>Actions Reject Reduce Approve]
             RISK_DQN --> CONFIDENCE_CHECK{AI Confidence > 50%?}
             CONFIDENCE_CHECK -->|Yes| APPROVE[APPROVE TRADE]
             CONFIDENCE_CHECK -->|No| REJECT[REJECT TRADE]
         end
         
         subgraph "🐝 SWARM CONSENSUS"
-            APPROVE --> COLLECT_VOTES[Collect Agent Opinions<br/>🧠 Market: BUY (25% weight)<br/>🛡️ Risk: BUY (30% weight)<br/>⚙️ Strategy: BUY (20% weight)<br/>⚡ Execution: BUY (25% weight)]
-            COLLECT_VOTES --> WEIGHTED_VOTING[Democratic Weighted Voting<br/>Total Vote Power = Σ(weight × confidence)<br/>Consensus = max_votes / total_votes]
-            WEIGHTED_VOTING --> CONSENSUS_CHECK{Consensus ≥ 65%?}
-            CONSENSUS_CHECK -->|Yes| CONSENSUS_REACHED[🐝 CONSENSUS REACHED<br/>Action: BUY<br/>Strength: 99.2%]
-            CONSENSUS_CHECK -->|No| HOLD_POSITION[⏸️ HOLD POSITION<br/>No Consensus]
+            APPROVE --> COLLECT_VOTES[Collect Agent Opinions<br/>Market BUY 25% weight<br/>Risk BUY 30% weight<br/>Strategy BUY 20% weight<br/>Execution BUY 25% weight]
+            COLLECT_VOTES --> WEIGHTED_VOTING[Democratic Weighted Voting<br/>Total Vote Power<br/>Consensus calculation]
+            WEIGHTED_VOTING --> CONSENSUS_CHECK{Consensus >= 65%?}
+            CONSENSUS_CHECK -->|Yes| CONSENSUS_REACHED[CONSENSUS REACHED<br/>Action BUY<br/>Strength 99.2%]
+            CONSENSUS_CHECK -->|No| HOLD_POSITION[HOLD POSITION<br/>No Consensus]
         end
         
         subgraph "⚡ TRADE EXECUTION"
-            CONSENSUS_REACHED --> CANCEL_ORDERS[Cancel Existing Orders<br/>DELETE /fapi/v1/allOpenOrders<br/>Clean Slate Strategy]
+            CONSENSUS_REACHED --> CANCEL_ORDERS[Cancel Existing Orders<br/>DELETE allOpenOrders<br/>Clean Slate Strategy]
             CANCEL_ORDERS --> FILTER_APPROVED[Filter Risk-Approved Proposals<br/>Only Execute Approved Trades]
-            FILTER_APPROVED --> PLACE_ORDERS[Place Real Orders<br/>POST /fapi/v1/order<br/>HMAC-SHA256 Signed<br/>Real Binance API]
-            PLACE_ORDERS --> ORDER_RESULTS[Order Execution Results<br/>✅ Order 1: ID 123456<br/>✅ Order 2: ID 123457<br/>❌ Order 3: Failed]
+            FILTER_APPROVED --> PLACE_ORDERS[Place Real Orders<br/>POST order<br/>HMAC-SHA256 Signed<br/>Real Binance API]
+            PLACE_ORDERS --> ORDER_RESULTS[Order Execution Results<br/>Order 1 ID 123456<br/>Order 2 ID 123457<br/>Order 3 Failed]
         end
         
         subgraph "📊 LEARNING & FEEDBACK"
-            ORDER_RESULTS --> UPDATE_METRICS[Update Performance Metrics<br/>• Execution Success Rate<br/>• AI Decision Accuracy<br/>• Consensus Effectiveness]
-            UPDATE_METRICS --> NEURAL_LEARNING[Neural Network Learning<br/>• Experience Replay<br/>• Target Network Updates<br/>• Confidence Adjustment]
-            NEURAL_LEARNING --> PNL_TRACKING[PnL Tracking Update<br/>• Account Balance<br/>• Trade Records<br/>• AI Performance]
+            ORDER_RESULTS --> UPDATE_METRICS[Update Performance Metrics<br/>Execution Success Rate<br/>AI Decision Accuracy<br/>Consensus Effectiveness]
+            UPDATE_METRICS --> NEURAL_LEARNING[Neural Network Learning<br/>Experience Replay<br/>Target Network Updates<br/>Confidence Adjustment]
+            NEURAL_LEARNING --> PNL_TRACKING[PnL Tracking Update<br/>Account Balance<br/>Trade Records<br/>AI Performance]
         end
         
         HOLD_POSITION --> WAIT_CYCLE
@@ -62,9 +62,9 @@ graph TB
     end
 
     subgraph "🔧 CONTROL OPERATIONS"
-        CONTROL_START[User Control Panel] --> STATUS_CHECK[Status Check<br/>📊 Real-time Metrics<br/>🤖 Agent Confidence<br/>🐝 Consensus Rates]
-        CONTROL_START --> EMERGENCY_STOP[Emergency Stop<br/>🚨 Cancel All Orders<br/>🛑 Stop All Agents]
-        CONTROL_START --> PERFORMANCE_REPORT[Performance Report<br/>💰 PnL Summary<br/>📈 AI Metrics<br/>🧠 Learning Progress]
+        CONTROL_START[User Control Panel] --> STATUS_CHECK[Status Check<br/>Real-time Metrics<br/>Agent Confidence<br/>Consensus Rates]
+        CONTROL_START --> EMERGENCY_STOP[Emergency Stop<br/>Cancel All Orders<br/>Stop All Agents]
+        CONTROL_START --> PERFORMANCE_REPORT[Performance Report<br/>PnL Summary<br/>AI Metrics<br/>Learning Progress]
     end
 
     SWARM_INIT --> LOOP_START
@@ -90,22 +90,22 @@ graph TB
 ```mermaid
 graph LR
     subgraph "📊 Market Analysis Network"
-        INPUT1[Market Features<br/>20 dimensions<br/>• Price, Volume<br/>• Technical Indicators<br/>• Time Features] --> DENSE1[Dense Layer<br/>20 → 64<br/>ReLU Activation]
+        INPUT1[Market Features<br/>20 dimensions<br/>Price Volume<br/>Technical Indicators<br/>Time Features] --> DENSE1[Dense Layer<br/>20 to 64<br/>ReLU Activation]
         DENSE1 --> DROPOUT1[Dropout 0.2<br/>Regularization]
-        DROPOUT1 --> DENSE2[Dense Layer<br/>64 → 64<br/>ReLU Activation]
+        DROPOUT1 --> DENSE2[Dense Layer<br/>64 to 64<br/>ReLU Activation]
         DENSE2 --> DROPOUT2[Dropout 0.2<br/>Regularization]
-        DROPOUT2 --> OUTPUT1[Output Layer<br/>64 → 5<br/>Softmax<br/>Market Sentiment Classes]
+        DROPOUT2 --> OUTPUT1[Output Layer<br/>64 to 5<br/>Softmax<br/>Market Sentiment Classes]
     end
 
     subgraph "🤖 Deep Q-Network (DQN)"
-        INPUT2[State Features<br/>12-18 dimensions<br/>• Risk Metrics<br/>• Portfolio State<br/>• Market Conditions] --> DENSE3[Dense Layer<br/>Input → 128<br/>ReLU Activation]
-        DENSE3 --> DENSE4[Dense Layer<br/>128 → 128<br/>ReLU Activation]
-        DENSE4 --> OUTPUT2[Q-Values Output<br/>128 → Actions<br/>Action Values]
+        INPUT2[State Features<br/>12-18 dimensions<br/>Risk Metrics<br/>Portfolio State<br/>Market Conditions] --> DENSE3[Dense Layer<br/>Input to 128<br/>ReLU Activation]
+        DENSE3 --> DENSE4[Dense Layer<br/>128 to 128<br/>ReLU Activation]
+        DENSE4 --> OUTPUT2[Q-Values Output<br/>128 to Actions<br/>Action Values]
     end
 
     subgraph "🔄 Experience Replay System"
-        EXPERIENCE[Experience Buffer<br/>Store: (state, action, reward, next_state)<br/>Size: 2000 experiences] --> BATCH[Random Batch<br/>Sample 32 experiences<br/>For training]
-        BATCH --> TRAINING[Neural Network Training<br/>• ADAM Optimizer<br/>• Target Network Updates<br/>• Loss Minimization]
+        EXPERIENCE[Experience Buffer<br/>Store state action reward next_state<br/>Size 2000 experiences] --> BATCH[Random Batch<br/>Sample 32 experiences<br/>For training]
+        BATCH --> TRAINING[Neural Network Training<br/>ADAM Optimizer<br/>Target Network Updates<br/>Loss Minimization]
     end
 
     OUTPUT1 --> MARKET_SIGNAL[Market Signal<br/>Confidence Score]
@@ -126,34 +126,34 @@ graph LR
 ```mermaid
 graph TD
     subgraph "🤖 AI Agents Individual Analysis"
-        MARKET_AGENT[🧠 Market Analyzer Agent<br/>• Neural Network Analysis<br/>• Groq LLM Sentiment<br/>• Confidence: 78%<br/>• Opinion: BUY<br/>• Weight: 25%]
+        MARKET_AGENT[Market Analyzer Agent<br/>Neural Network Analysis<br/>Groq LLM Sentiment<br/>Confidence 78%<br/>Opinion BUY<br/>Weight 25%]
         
-        RISK_AGENT[🛡️ Risk Manager Agent<br/>• DQN Risk Assessment<br/>• Portfolio Analysis<br/>• Confidence: 82%<br/>• Opinion: BUY<br/>• Weight: 30%]
+        RISK_AGENT[Risk Manager Agent<br/>DQN Risk Assessment<br/>Portfolio Analysis<br/>Confidence 82%<br/>Opinion BUY<br/>Weight 30%]
         
-        STRATEGY_AGENT[⚙️ Strategy Optimizer Agent<br/>• Parameter Optimization<br/>• Performance Analysis<br/>• Confidence: 71%<br/>• Opinion: BUY<br/>• Weight: 20%]
+        STRATEGY_AGENT[Strategy Optimizer Agent<br/>Parameter Optimization<br/>Performance Analysis<br/>Confidence 71%<br/>Opinion BUY<br/>Weight 20%]
         
-        EXECUTION_AGENT[⚡ Execution Agent<br/>• Order Timing Analysis<br/>• Execution Risk Assessment<br/>• Confidence: 85%<br/>• Opinion: BUY<br/>• Weight: 25%]
+        EXECUTION_AGENT[Execution Agent<br/>Order Timing Analysis<br/>Execution Risk Assessment<br/>Confidence 85%<br/>Opinion BUY<br/>Weight 25%]
     end
 
     subgraph "🗳️ Democratic Voting Process"
-        MARKET_AGENT --> VOTE1[Vote Power: 25% × 78% = 19.5%<br/>Action: BUY]
-        RISK_AGENT --> VOTE2[Vote Power: 30% × 82% = 24.6%<br/>Action: BUY]
-        STRATEGY_AGENT --> VOTE3[Vote Power: 20% × 71% = 14.2%<br/>Action: BUY]
-        EXECUTION_AGENT --> VOTE4[Vote Power: 25% × 85% = 21.25%<br/>Action: BUY]
+        MARKET_AGENT --> VOTE1[Vote Power 25% x 78% = 19.5%<br/>Action BUY]
+        RISK_AGENT --> VOTE2[Vote Power 30% x 82% = 24.6%<br/>Action BUY]
+        STRATEGY_AGENT --> VOTE3[Vote Power 20% x 71% = 14.2%<br/>Action BUY]
+        EXECUTION_AGENT --> VOTE4[Vote Power 25% x 85% = 21.25%<br/>Action BUY]
         
-        VOTE1 --> AGGREGATE[Aggregate Votes<br/>BUY: 79.55%<br/>SELL: 0%<br/>HOLD: 20.45%]
+        VOTE1 --> AGGREGATE[Aggregate Votes<br/>BUY 79.55%<br/>SELL 0%<br/>HOLD 20.45%]
         VOTE2 --> AGGREGATE
         VOTE3 --> AGGREGATE
         VOTE4 --> AGGREGATE
     end
 
     subgraph "🎯 Consensus Decision"
-        AGGREGATE --> CONSENSUS_CHECK{BUY Votes ≥ 65%?}
-        CONSENSUS_CHECK -->|Yes: 79.55% ≥ 65%| CONSENSUS_REACHED[🐝 CONSENSUS REACHED<br/>Decision: BUY<br/>Strength: 79.55%<br/>Status: APPROVED]
-        CONSENSUS_CHECK -->|No| NO_CONSENSUS[❌ NO CONSENSUS<br/>Decision: HOLD<br/>Reason: Below Threshold]
+        AGGREGATE --> CONSENSUS_CHECK{BUY Votes >= 65%?}
+        CONSENSUS_CHECK -->|Yes 79.55% >= 65%| CONSENSUS_REACHED[CONSENSUS REACHED<br/>Decision BUY<br/>Strength 79.55%<br/>Status APPROVED]
+        CONSENSUS_CHECK -->|No| NO_CONSENSUS[NO CONSENSUS<br/>Decision HOLD<br/>Reason Below Threshold]
         
-        CONSENSUS_REACHED --> EXECUTE_DECISION[Execute Trading Decision<br/>🚀 Place Real Orders<br/>📊 Live Trading]
-        NO_CONSENSUS --> WAIT_NEXT[⏸️ Wait for Next Cycle<br/>🔄 No Action Taken]
+        CONSENSUS_REACHED --> EXECUTE_DECISION[Execute Trading Decision<br/>Place Real Orders<br/>Live Trading]
+        NO_CONSENSUS --> WAIT_NEXT[Wait for Next Cycle<br/>No Action Taken]
     end
 
     classDef agentNode fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
@@ -237,28 +237,28 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph "📈 Real-time Monitoring"
-        MONITOR_START[Monitor Start] --> COLLECT_METRICS[Collect System Metrics<br/>• Trading Performance<br/>• AI Model Accuracy<br/>• Consensus Rates<br/>• Order Success]
+        MONITOR_START[Monitor Start] --> COLLECT_METRICS[Collect System Metrics<br/>Trading Performance<br/>AI Model Accuracy<br/>Consensus Rates<br/>Order Success]
         
-        COLLECT_METRICS --> TRADING_METRICS[Trading Metrics<br/>💰 Account Balance: $1,052.34<br/>📊 Total Trades: 47<br/>📈 Success Rate: 87%<br/>⏱️ Runtime: 24.5 hours]
+        COLLECT_METRICS --> TRADING_METRICS[Trading Metrics<br/>Account Balance 1052.34<br/>Total Trades 47<br/>Success Rate 87%<br/>Runtime 24.5 hours]
         
-        COLLECT_METRICS --> AI_METRICS[AI Performance<br/>🧠 Neural Net Accuracy: 89%<br/>🤖 Groq LLM Accuracy: 92%<br/>🐝 Consensus Rate: 99.2%<br/>🎯 Decision Accuracy: 85%]
+        COLLECT_METRICS --> AI_METRICS[AI Performance<br/>Neural Net Accuracy 89%<br/>Groq LLM Accuracy 92%<br/>Consensus Rate 99.2%<br/>Decision Accuracy 85%]
         
-        COLLECT_METRICS --> AGENT_METRICS[Agent Performance<br/>📊 Market Analyzer: 78% confidence<br/>🛡️ Risk Manager: 82% confidence<br/>⚙️ Strategy Optimizer: 71% confidence<br/>⚡ Execution Agent: 85% confidence]
+        COLLECT_METRICS --> AGENT_METRICS[Agent Performance<br/>Market Analyzer 78% confidence<br/>Risk Manager 82% confidence<br/>Strategy Optimizer 71% confidence<br/>Execution Agent 85% confidence]
         
-        TRADING_METRICS --> DASHBOARD[Performance Dashboard<br/>📊 Live Charts<br/>📈 PnL Graphs<br/>🎯 Success Metrics<br/>⚠️ Risk Alerts]
+        TRADING_METRICS --> DASHBOARD[Performance Dashboard<br/>Live Charts<br/>PnL Graphs<br/>Success Metrics<br/>Risk Alerts]
         AI_METRICS --> DASHBOARD
         AGENT_METRICS --> DASHBOARD
         
         DASHBOARD --> ALERTS{Performance Issues?}
-        ALERTS -->|Critical Issues| EMERGENCY[🚨 Emergency Actions<br/>• Stop Trading<br/>• Cancel Orders<br/>• Alert User]
-        ALERTS -->|Normal Operation| CONTINUE[✅ Continue Monitoring<br/>Update Every 30s]
+        ALERTS -->|Critical Issues| EMERGENCY[Emergency Actions<br/>Stop Trading<br/>Cancel Orders<br/>Alert User]
+        ALERTS -->|Normal Operation| CONTINUE[Continue Monitoring<br/>Update Every 30s]
         
         CONTINUE --> COLLECT_METRICS
     end
 
     subgraph "📊 Historical Analysis"
-        HISTORICAL[Historical Data Analysis] --> TREND_ANALYSIS[Trend Analysis<br/>• Learning Curves<br/>• Performance Evolution<br/>• Strategy Optimization]
-        TREND_ANALYSIS --> OPTIMIZATION[Strategy Optimization<br/>• Parameter Tuning<br/>• Risk Adjustment<br/>• AI Model Improvement]
+        HISTORICAL[Historical Data Analysis] --> TREND_ANALYSIS[Trend Analysis<br/>Learning Curves<br/>Performance Evolution<br/>Strategy Optimization]
+        TREND_ANALYSIS --> OPTIMIZATION[Strategy Optimization<br/>Parameter Tuning<br/>Risk Adjustment<br/>AI Model Improvement]
     end
 
     DASHBOARD -.-> HISTORICAL
@@ -279,54 +279,54 @@ graph TB
 
 ```mermaid
 graph TB
-    START([🚀 System Start]) --> INIT_PHASE[🔧 Initialization Phase]
+    START([System Start]) --> INIT_PHASE[Initialization Phase]
     
-    subgraph INIT_PHASE [🔧 Initialization Phase]
-        LOAD_CONFIG[Load Configuration<br/>• API Keys<br/>• Strategy Parameters<br/>• AI Settings]
-        INIT_AI[Initialize AI Components<br/>• 4 Specialized Agents<br/>• Neural Networks<br/>• Groq LLM]
-        VERIFY_API[Verify API Connections<br/>• Binance Testnet<br/>• Groq API<br/>• System Health]
+    subgraph INIT_PHASE [Initialization Phase]
+        LOAD_CONFIG[Load Configuration<br/>API Keys<br/>Strategy Parameters<br/>AI Settings]
+        INIT_AI[Initialize AI Components<br/>4 Specialized Agents<br/>Neural Networks<br/>Groq LLM]
+        VERIFY_API[Verify API Connections<br/>Binance Testnet<br/>Groq API<br/>System Health]
     end
     
-    INIT_PHASE --> TRADING_LOOP[🔄 Main Trading Loop]
+    INIT_PHASE --> TRADING_LOOP[Main Trading Loop]
     
-    subgraph TRADING_LOOP [🔄 Main Trading Loop - Every 30s]
-        PHASE1[🧠 AI Analysis Phase<br/>• Market Data Processing<br/>• Neural Network Inference<br/>• LLM Sentiment Analysis]
-        PHASE2[📋 Proposal Generation<br/>• Trading Signal Creation<br/>• Multi-level Order Planning<br/>• Real Price Integration]
-        PHASE3[🛡️ Risk Assessment<br/>• DQN Risk Evaluation<br/>• Portfolio Analysis<br/>• Confidence Filtering]
-        PHASE4[🐝 Swarm Consensus<br/>• Democratic Voting<br/>• Weighted Opinions<br/>• Threshold Validation]
-        PHASE5[⚡ Trade Execution<br/>• Order Cancellation<br/>• Real API Calls<br/>• Result Processing]
-        PHASE6[📊 Learning Update<br/>• Performance Recording<br/>• Neural Network Training<br/>• Metrics Update]
+    subgraph TRADING_LOOP [Main Trading Loop - Every 30s]
+        PHASE1[AI Analysis Phase<br/>Market Data Processing<br/>Neural Network Inference<br/>LLM Sentiment Analysis]
+        PHASE2[Proposal Generation<br/>Trading Signal Creation<br/>Multi-level Order Planning<br/>Real Price Integration]
+        PHASE3[Risk Assessment<br/>DQN Risk Evaluation<br/>Portfolio Analysis<br/>Confidence Filtering]
+        PHASE4[Swarm Consensus<br/>Democratic Voting<br/>Weighted Opinions<br/>Threshold Validation]
+        PHASE5[Trade Execution<br/>Order Cancellation<br/>Real API Calls<br/>Result Processing]
+        PHASE6[Learning Update<br/>Performance Recording<br/>Neural Network Training<br/>Metrics Update]
         
         PHASE1 --> PHASE2 --> PHASE3 --> PHASE4 --> PHASE5 --> PHASE6
         PHASE6 --> PHASE1
     end
     
-    TRADING_LOOP --> CONTROL_INTERFACE[👨‍💻 User Control Interface]
+    TRADING_LOOP --> CONTROL_INTERFACE[User Control Interface]
     
-    subgraph CONTROL_INTERFACE [👨‍💻 User Control Interface]
-        STATUS[📊 Real-time Status<br/>• System Health<br/>• Trading Activity<br/>• Performance Metrics]
-        REPORTS[📈 Performance Reports<br/>• PnL Analysis<br/>• AI Metrics<br/>• Trade History]
-        CONTROLS[🎛️ System Controls<br/>• Start/Stop Trading<br/>• Emergency Stop<br/>• Parameter Adjustment]
+    subgraph CONTROL_INTERFACE [User Control Interface]
+        STATUS[Real-time Status<br/>System Health<br/>Trading Activity<br/>Performance Metrics]
+        REPORTS[Performance Reports<br/>PnL Analysis<br/>AI Metrics<br/>Trade History]
+        CONTROLS[System Controls<br/>Start Stop Trading<br/>Emergency Stop<br/>Parameter Adjustment]
     end
     
-    CONTROL_INTERFACE --> MONITORING[📊 Continuous Monitoring]
+    CONTROL_INTERFACE --> MONITORING[Continuous Monitoring]
     
-    subgraph MONITORING [📊 Continuous Monitoring]
-        HEALTH_CHECK[🏥 System Health<br/>• API Connectivity<br/>• Agent Performance<br/>• Error Detection]
-        PERFORMANCE[📈 Performance Tracking<br/>• Success Rates<br/>• Learning Progress<br/>• Risk Metrics]
-        ALERTS[🚨 Alert System<br/>• Performance Issues<br/>• Risk Warnings<br/>• System Errors]
+    subgraph MONITORING [Continuous Monitoring]
+        HEALTH_CHECK[System Health<br/>API Connectivity<br/>Agent Performance<br/>Error Detection]
+        PERFORMANCE[Performance Tracking<br/>Success Rates<br/>Learning Progress<br/>Risk Metrics]
+        ALERTS[Alert System<br/>Performance Issues<br/>Risk Warnings<br/>System Errors]
     end
     
-    MONITORING --> OPTIMIZATION[🔧 Continuous Optimization]
+    MONITORING --> OPTIMIZATION[Continuous Optimization]
     
-    subgraph OPTIMIZATION [🔧 Continuous Optimization]
-        AI_TRAINING[🧠 AI Model Training<br/>• Experience Replay<br/>• Neural Network Updates<br/>• Performance Improvement]
-        PARAMETER_TUNING[⚙️ Parameter Optimization<br/>• Strategy Adjustment<br/>• Risk Calibration<br/>• Efficiency Enhancement]
-        SYSTEM_EVOLUTION[🚀 System Evolution<br/>• Feature Updates<br/>• Architecture Improvement<br/>• Capability Expansion]
+    subgraph OPTIMIZATION [Continuous Optimization]
+        AI_TRAINING[AI Model Training<br/>Experience Replay<br/>Neural Network Updates<br/>Performance Improvement]
+        PARAMETER_TUNING[Parameter Optimization<br/>Strategy Adjustment<br/>Risk Calibration<br/>Efficiency Enhancement]
+        SYSTEM_EVOLUTION[System Evolution<br/>Feature Updates<br/>Architecture Improvement<br/>Capability Expansion]
     end
     
     OPTIMIZATION --> TRADING_LOOP
-    
+
     classDef initNode fill:#e8f5e8,stroke:#4caf50,stroke-width:3px
     classDef tradingNode fill:#e3f2fd,stroke:#2196f3,stroke-width:3px
     classDef controlNode fill:#fff3e0,stroke:#ff9800,stroke-width:3px
