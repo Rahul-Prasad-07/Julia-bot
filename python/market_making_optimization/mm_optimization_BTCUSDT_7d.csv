@@ -1,0 +1,6 @@
+name,spread_pct,order_levels,max_position_pct,return_pct,sharpe,max_drawdown,num_trades,win_rate,exposure_time
+Conservative,10.0,2,20.0,0.0,,-0.0,0,,0.0
+Default,15.0,3,30.0,0.0,,-0.0,0,,0.0
+Aggressive,20.0,4,40.0,0.0,,-0.0,0,,0.0
+Tight Spread,5.0,2,10.0,0.0,,-0.0,0,,0.0
+Wide Spread,25.0,5,50.0,0.0,,-0.0,0,,0.0

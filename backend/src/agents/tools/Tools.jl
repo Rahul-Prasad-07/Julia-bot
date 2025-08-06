@@ -6,7 +6,7 @@ include("tool_example_adder.jl")
 include("tool_ping.jl")
 include("tool_llm_chat.jl")
 include("tool_write_blog.jl")
-include("tool_post_to_x.jl")
+# include("tool_post_to_x.jl")  # Temporarily disabled due to tweepy dependency issue
 include("telegram/tool_ban_user.jl")
 include("telegram/tool_detect_swearing.jl")
 include("telegram/tool_send_message.jl")
@@ -16,6 +16,10 @@ include("tool_solana_knowledge.jl")
 include("tool_solana_code_gen.jl")
 include("tool_solana_ecosystem.jl")
 include("tool_solana_knowledge_multi_model.jl")
+include("tool_yieldswarm_analyzer.jl")
+include("tool_yieldswarm_executor.jl")
+include("tool_yieldswarm_risk_manager.jl")
+include("tool_yieldswarm_data_fetcher.jl")
 
 using ..CommonTypes: ToolSpecification
 
@@ -32,7 +36,7 @@ end
 # All tools to be used by agents must be registered here:
 
 register_tool(TOOL_BLOG_WRITER_SPECIFICATION)
-register_tool(TOOL_POST_TO_X_SPECIFICATION)
+# register_tool(TOOL_POST_TO_X_SPECIFICATION)  # Temporarily disabled due to tweepy dependency issue
 register_tool(TOOL_EXAMPLE_ADDER_SPECIFICATION)
 register_tool(TOOL_LLM_CHAT_SPECIFICATION)
 register_tool(TOOL_PING_SPECIFICATION)
@@ -45,5 +49,9 @@ register_tool(TOOL_SOLANA_KNOWLEDGE_SPECIFICATION)
 register_tool(TOOL_SOLANA_CODE_GEN_SPECIFICATION)
 register_tool(TOOL_SOLANA_ECOSYSTEM_SPECIFICATION)
 register_tool(TOOL_SOLANA_KNOWLEDGE_MULTI_MODEL_SPECIFICATION)
+register_tool(TOOL_YIELDSWARM_ANALYZER_SPECIFICATION)
+register_tool(TOOL_YIELDSWARM_EXECUTOR_SPECIFICATION)
+register_tool(TOOL_YIELDSWARM_RISK_MANAGER_SPECIFICATION)
+register_tool(TOOL_YIELDSWARM_DATA_FETCHER_SPECIFICATION)
 
 end

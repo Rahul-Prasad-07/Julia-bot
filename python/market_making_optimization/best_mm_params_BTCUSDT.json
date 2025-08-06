@@ -1,0 +1,18 @@
+{
+  "strategy": {
+    "base_spread_pct": 0.1,
+    "order_levels": 2,
+    "max_position_pct": 0.2,
+    "order_amount": 0.1,
+    "enable_dynamic_spreads": true,
+    "enable_inventory_skew": true
+  },
+  "optimization_metadata": {
+    "symbol": "BTCUSDT",
+    "timeframe": "1h",
+    "days_tested": 7,
+    "best_return_pct": 0.0,
+    "vs_buy_hold": 3.136891147818721,
+    "optimization_date": "2025-08-05T12:52:22.242647"
+  }
+}

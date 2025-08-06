@@ -7,7 +7,7 @@ export GroqConfig, groq_util
 
 @kwdef struct GroqConfig
     api_key::String
-    model_name::String = "llama-3.1-70b-versatile"  # Fast, high-quality model
+    model_name::String = "meta-llama/llama-4-scout-17b-16e-instruct"  # Fast, high-quality model
     temperature::Float64 = 0.0
     max_tokens::Int = 4096
     base_url::String = "https://api.groq.com/openai/v1"
