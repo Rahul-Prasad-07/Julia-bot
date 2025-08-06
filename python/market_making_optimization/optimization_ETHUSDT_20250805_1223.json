@@ -1,0 +1,83 @@
+{
+  "symbol": "ETHUSDT",
+  "optimization_date": "2025-08-05T12:23:37.408507",
+  "market_regime": "normal",
+  "days_analyzed": 7,
+  "data_points": 180,
+  "buy_hold_return": -3.976269882666583,
+  "best_params": {
+    "name": "Tight Spread",
+    "spread_pct": 8.0,
+    "order_levels": 2,
+    "max_position_pct": 0.15,
+    "return_pct": 0.20177741480004044,
+    "sharpe": 0.920722035684317,
+    "max_drawdown": 0.6822311244937151,
+    "num_trades": 18,
+    "composite_score": 0.18578091210981207,
+    "market_regime": "normal",
+    "base_spread_pct": 0.08
+  },
+  "all_results": [
+    {
+      "name": "Conservative",
+      "spread_pct": 10.0,
+      "order_levels": 2,
+      "max_position_pct": 20.0,
+      "return_pct": 0.12961746099997312,
+      "sharpe": 0.4555709237610069,
+      "max_drawdown": 1.073419258247299,
+      "num_trades": 26,
+      "composite_score": 0.055011074181519716,
+      "market_regime": "normal"
+    },
+    {
+      "name": "Balanced",
+      "spread_pct": 15.0,
+      "order_levels": 3,
+      "max_position_pct": 30.0,
+      "return_pct": -0.0247882779000327,
+      "sharpe": -0.05665232995313769,
+      "max_drawdown": 1.9499991574505104,
+      "num_trades": 29,
+      "composite_score": -0.0012711942877165993,
+      "market_regime": "normal"
+    },
+    {
+      "name": "Aggressive",
+      "spread_pct": 20.0,
+      "order_levels": 4,
+      "max_position_pct": 40.0,
+      "return_pct": -0.12152402740001679,
+      "sharpe": -0.21110731447786862,
+      "max_drawdown": 2.6120823134809013,
+      "num_trades": 39,
+      "composite_score": -0.0046523812351867274,
+      "market_regime": "normal"
+    },
+    {
+      "name": "Tight Spread",
+      "spread_pct": 8.0,
+      "order_levels": 2,
+      "max_position_pct": 15.0,
+      "return_pct": 0.20177741480004044,
+      "sharpe": 0.920722035684317,
+      "max_drawdown": 0.6822311244937151,
+      "num_trades": 18,
+      "composite_score": 0.18578091210981207,
+      "market_regime": "normal"
+    },
+    {
+      "name": "Wide Spread",
+      "spread_pct": 25.0,
+      "order_levels": 5,
+      "max_position_pct": 50.0,
+      "return_pct": -0.39127723859995606,
+      "sharpe": -0.5862824301450511,
+      "max_drawdown": 3.3761471117455755,
+      "num_trades": 43,
+      "composite_score": -0.011589460578856509,
+      "market_regime": "normal"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "symbol": "ETHUSDT",
+  "optimization_date": "2025-08-05T12:23:37.408507",
+  "market_regime": "normal",
+  "optimized_parameters": {
+    "base_spread_pct": 0.08,
+    "order_levels": 2,
+    "max_position_pct": 0.15
+  },
+  "performance_metrics": {
+    "expected_return_pct": 0.20177741480004044,
+    "sharpe_ratio": 0.920722035684317,
+    "max_drawdown_pct": 0.6822311244937151,
+    "composite_score": 0.18578091210981207
+  },
+  "configuration_for_julia": {
+    "symbols": [
+      "ETHUSDT"
+    ],
+    "base_spread_pct": 0.08,
+    "order_levels": 2,
+    "max_position_pct": 0.15,
+    "enable_dynamic_spreads": true,
+    "enable_trend_following": true
+  }
+}

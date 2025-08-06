@@ -1,0 +1,53 @@
+{
+  "timestamp": "2025-08-05T13:13:40.763899",
+  "optimization_results": {
+    "BTCUSDT": {
+      "success": true,
+      "symbol": "BTCUSDT",
+      "best_params": {
+        "base_spread_pct": 0.05,
+        "order_levels": 2,
+        "max_position_pct": 0.1,
+        "volatility_adjustment_factor": 25.0,
+        "enable_dynamic_spreads": true,
+        "enable_inventory_skew": true
+      },
+      "best_return": 0.0,
+      "best_sharpe": NaN,
+      "best_score": 0.0,
+      "max_drawdown": 0.0,
+      "num_trades": 0,
+      "combinations_tested": 50,
+      "optimization_time": "2025-08-05T13:13:37.569465"
+    },
+    "ETHUSDT": {
+      "success": true,
+      "symbol": "ETHUSDT",
+      "best_params": {
+        "base_spread_pct": 0.05,
+        "order_levels": 2,
+        "max_position_pct": 0.1,
+        "volatility_adjustment_factor": 25.0,
+        "enable_dynamic_spreads": true,
+        "enable_inventory_skew": true
+      },
+      "best_return": 0.0,
+      "best_sharpe": NaN,
+      "best_score": 0.0,
+      "max_drawdown": 0.0,
+      "num_trades": 0,
+      "combinations_tested": 50,
+      "optimization_time": "2025-08-05T13:13:40.755916"
+    }
+  },
+  "best_params": {
+    "base_spread_pct": 0.05,
+    "order_levels": 2,
+    "max_position_pct": 0.1,
+    "volatility_adjustment_factor": 25.0,
+    "enable_dynamic_spreads": true,
+    "enable_inventory_skew": true
+  },
+  "config_path": "h:\\Rahul Prasad 01\\bot\\JuliaOS\\backend\\config_market_making.toml",
+  "julia_backend_path": "h:\\Rahul Prasad 01\\bot\\JuliaOS\\backend"
+}

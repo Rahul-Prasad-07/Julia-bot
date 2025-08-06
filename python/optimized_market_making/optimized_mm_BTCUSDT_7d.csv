@@ -1,0 +1,6 @@
+name,description,spread_pct,order_levels,max_position_pct,return_pct,final_equity,sharpe,max_drawdown,num_trades,win_rate,exposure_time,profit_factor,sqn
+Conservative,"Low risk, steady returns",8.0,2,15.0,-0.03178640000000596,9996821.36,-4.817125113789218,0.06477048423582099,0,,0.0,,
+Balanced,Optimal risk/return balance,12.0,3,25.0,-0.03178640000000596,9996821.36,-4.817125113789218,0.06477048423582099,0,,0.0,,
+Growth,"Higher returns, managed risk",15.0,4,35.0,-0.03178640000000596,9996821.36,-4.817125113789218,0.06477048423582099,0,,0.0,,
+Tight Scalping,"High frequency, small spreads",5.0,2,10.0,-0.03178640000000596,9996821.36,-4.817125113789218,0.06477048423582099,0,,0.0,,
+Aggressive,Maximum PnL potential,20.0,5,45.0,-0.03178640000000596,9996821.36,-4.817125113789218,0.06477048423582099,0,,0.0,,

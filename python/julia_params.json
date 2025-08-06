@@ -1,0 +1,13 @@
+{
+    "base_spread_pct": 0.18,
+    "symbols": [
+        "ETHUSDT"
+    ],
+    "max_capital": 1000,
+    "learning_rate": 0.01,
+    "max_drawdown": 0.2,
+    "leverage": 10,
+    "exploration_rate": 0.1,
+    "timestamp": "2025-08-06T10:01:38.887",
+    "order_levels": 4
+}

@@ -1,0 +1,32 @@
+{
+  "best_params": {
+    "base_spread_pct": 0.18,
+    "order_levels": 4,
+    "volatility_adjustment_factor": 35,
+    "rl_volatility_factor": 1.2,
+    "rl_spread_factor": 0.8,
+    "rl_inventory_factor": 1.1
+  },
+  "results": {
+    "SQN": 2.45,
+    "Sharpe_Ratio": 1.82,
+    "Return": 0.234,
+    "Max_Drawdown": -0.086
+  },
+  "history": [
+    {
+      "params": {
+        "base_spread_pct": 0.18,
+        "order_levels": 4,
+        "volatility_adjustment_factor": 35,
+        "rl_volatility_factor": 1.2,
+        "rl_spread_factor": 0.8,
+        "rl_inventory_factor": 1.1
+      },
+      "SQN": 2.45
+    }
+  ],
+  "optimization_time": "2025-08-06T02:58:36.081006",
+  "symbol": "ETHUSDT",
+  "days": 15
+}

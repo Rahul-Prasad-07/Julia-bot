@@ -1,25 +1,14 @@
-# Updated by Automated Optimizer on 2025-08-05 13:13:40
+# Market Making Configuration for Binance Testnet
+# This file contains default settings for your trading bot
+
 [strategy]
 name = "market_making"
-symbols = ["ETHUSDT", "BTCUSDT"]
-base_spread_pct = 0.050
-order_levels = 2
-max_capital = 10000.0
-leverage = 20
-order_amount = 0.100
-enable_dynamic_spreads = true
-enable_inventory_skew = true
-volatility_adjustment_factor = 25.0
-testnet = true
-
-# Optimization metadata
-[optimization]
-last_update = "2025-08-05T13:13:40.762105"
-best_return_pct = 0.000
-best_sharpe = nan
-optimization_score = 0.000
-combinations_tested = 50
-optimized_symbol = "BTCUSDT"
+symbols = ["ETHUSDT"]
+base_spread_pct = 0.2        # 0.2% spread
+order_levels = 3             # 3 levels of orders
+max_capital = 1000.0         # Maximum capital to deploy
+leverage = 10                # Leverage for futures trading
+testnet = true               # Using Binance testnet
 
 [risk_management]
 max_drawdown = 0.15          # 15% maximum drawdown
@@ -28,6 +17,7 @@ var_95_limit = 0.05          # 5% VaR limit
 stop_loss_pct = 0.05         # 5% stop loss
 take_profit_pct = 0.10       # 10% take profit
 risk_check_interval = 30     # Risk check every 30 seconds
+
 [exchange]
 name = "binance_testnet"
 base_url = "https://testnet.binancefuture.com"
@@ -35,6 +25,7 @@ api_key_env = "BINANCE_API_KEY"
 api_secret_env = "BINANCE_API_SECRET"
 rate_limit = 1200            # Requests per minute
 order_timeout = 30           # Order timeout in seconds
+
 [llm_optimization]
 enabled = true
 model = "gpt-4"
@@ -43,11 +34,13 @@ optimization_objective = "sharpe_ratio"
 max_generations = 20
 population_size = 50
 backtest_days = 365
+
 [multi_exchange]
 enabled = false              # Disabled for testnet
 exchanges = ["binance"]      # Only Binance for testnet
 arbitrage_threshold = 0.5    # 0.5% minimum arbitrage
 min_profit = 10.0           # Minimum profit threshold
+
 [agent_swarm]
 enabled = true
 swarm_size = 3
@@ -55,11 +48,13 @@ agent_types = ["market_maker", "arbitrage", "risk_manager"]
 consensus_threshold = 0.6
 enable_learning = true
 communication_interval = 60  # Inter-agent communication every 60s
+
 [monitoring]
 log_level = "INFO"
 metrics_interval = 300       # Log metrics every 5 minutes
 performance_tracking = true
 alert_thresholds = { drawdown = 0.10, loss_streak = 5 }
+
 [advanced]
 enable_machine_learning = false  # Disabled for initial testing
 sentiment_analysis = false       # Disabled for testnet
