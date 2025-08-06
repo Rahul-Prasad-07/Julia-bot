@@ -8,8 +8,8 @@ graph TB
         START[System Start] --> ENV[Load Environment Variables]
         ENV --> API_KEYS[Verify API Keys<br/>• Binance API<br/>• Groq LLM]
         API_KEYS --> INIT_AGENTS[Initialize 4 AI Agents<br/>🧠 Market Analyzer<br/>🛡️ Risk Manager<br/>⚙️ Strategy Optimizer<br/>⚡ Execution Agent]
-        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks<br/>• MarketAnalysisNet<br/>• TradingDQN (4x)<br/>• Experience Replay]
-        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus<br/>• Democratic Voting<br/>• Weighted Opinions<br/>• 65% Threshold]
+        INIT_AGENTS --> NEURAL_NETS[Create Neural Networks\n• MarketAnalysisNet\n• TradingDQN (4x)\n• Experience Replay]
+        NEURAL_NETS --> SWARM_INIT[Initialize Swarm Consensus\n• Democratic Voting\n• Weighted Opinions\n• 65% Threshold]
     end
 
     subgraph "🔄 MAIN TRADING LOOP (Every 30s)"
@@ -94,7 +94,7 @@ graph LR
         DENSE1 --> DROPOUT1[Dropout 0.2<br/>Regularization]
         DROPOUT1 --> DENSE2[Dense Layer<br/>64 → 64<br/>ReLU Activation]
         DENSE2 --> DROPOUT2[Dropout 0.2<br/>Regularization]
-        DROPOUT2 --> OUTPUT1[Output Layer<br/>64 → 5<br/>Softmax<br/>[strong_sell, sell, hold, buy, strong_buy]]
+        DROPOUT2 --> OUTPUT1[Output Layer\n64 → 5\nSoftmax\n[strong_sell, sell, hold, buy, strong_buy]]
     end
 
     subgraph "🤖 Deep Q-Network (DQN)"
