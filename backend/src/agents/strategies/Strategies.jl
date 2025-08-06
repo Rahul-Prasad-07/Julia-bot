@@ -18,6 +18,7 @@ include("strategy_agent_swarm.jl")
 include("strategy_rl_market_making.jl")
 include("strategy_rl_market_making_enhanced.jl")
 include("strategy_ai_swarm_market_making.jl")
+include("strategy_ai_swarm_wrapper.jl")
 
 using ..CommonTypes: StrategySpecification
 
@@ -49,5 +50,6 @@ register_strategy(STRATEGY_AGENT_SWARM_SPECIFICATION)
 register_strategy(STRATEGY_RL_MARKET_MAKING_SPECIFICATION)
 register_strategy(ENHANCED_RL_MARKET_MAKING_STRATEGY)
 register_strategy(AI_SWARM_MARKET_MAKING_STRATEGY)
+register_strategy(AI_SWARM_WRAPPER_STRATEGY)
 
 end
