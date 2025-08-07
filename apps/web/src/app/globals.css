@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .ai-gradient {
+    @apply bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500;
+  }
+  
+  .swarm-gradient {
+    @apply bg-gradient-to-r from-cyan-500 via-teal-500 to-green-500;
+  }
+  
+  .trading-gradient {
+    @apply bg-gradient-to-r from-orange-500 via-red-500 to-pink-500;
+  }
+  
+  .neural-glow {
+    @apply shadow-ai border border-purple-500/20;
+  }
+  
+  .swarm-glow {
+    @apply shadow-swarm border border-cyan-500/20;
+  }
+  
+  .consensus-glow {
+    @apply shadow-consensus border border-green-500/20;
+  }
+  
+  .card-base {
+    @apply bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-6;
+  }
+  
+  .agent-card {
+    @apply card-base hover:bg-white/15 transition-all duration-300;
+  }
+  
+  .status-indicator {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+  
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+  
+  .btn-warning {
+    @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2;
+  }
+}

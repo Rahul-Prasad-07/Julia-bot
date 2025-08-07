@@ -1460,52 +1460,54 @@ function cancel_all_orders_ai_swarm(symbol::String, api_key::String, api_secret:
             return 0
         end
         
-        # Check if no orders (empty array or not a vector)
-        if !isa(open_orders, Vector) || isempty(open_orders)
+        # Handle successful response (JSON3.Array, Vector, or Array)
+        if (isa(open_orders, Vector) || isa(open_orders, JSON3.Array) || isa(open_orders, Array)) && !isempty(open_orders)
+            println("📋 [AI SWARM API] Found $(length(open_orders)) open orders to cancel")
+            
+            cancelled_count = 0
+            
+            for (i, order) in enumerate(open_orders)
+                try
+                    # Use dictionary access instead of property access (this was the bug!)
+                    order_id = string(order["orderId"])
+                    side = string(order["side"])
+                    qty = string(order["origQty"])
+                    price = string(order["price"])
+                    
+                    println("🗑️ [AI SWARM API] Cancelling order $i/$(length(open_orders)): $side $qty @ \$$price (ID: $order_id)")
+                    
+                    # Cancel each order
+                    cancel_params = Dict("symbol" => symbol, "orderId" => order_id)
+                    cancel_result = binance_api_request_ai_swarm("/fapi/v1/order", "DELETE", api_key, api_secret, cancel_params)
+                    
+                    # Check cancellation result safely
+                    if isa(cancel_result, Dict) && haskey(cancel_result, "error")
+                        println("❌ [AI SWARM API] Failed to cancel order $order_id: $(cancel_result["error"])")
+                    elseif isa(cancel_result, Dict) && (haskey(cancel_result, "orderId") || haskey(cancel_result, "symbol"))
+                        println("✅ [AI SWARM API] Successfully cancelled order $order_id")
+                        cancelled_count += 1
+                    else
+                        println("✅ [AI SWARM API] Order $order_id cancellation completed")
+                        cancelled_count += 1  # Assume success if no explicit error
+                    end
+                    
+                    sleep(0.1)  # Small delay between cancellations (reduced from 0.5 to 0.1)
+                    
+                catch order_error
+                    println("❌ [AI SWARM API] Error cancelling individual order: $order_error")
+                end
+            end
+            
+            println("📊 [AI SWARM API] Cancellation Summary: $cancelled_count/$(length(open_orders)) orders cancelled successfully")
+            return cancelled_count
+        else
             println("✅ [AI SWARM API] No open orders found for $symbol")
             return 0
         end
         
-        println("📋 [AI SWARM API] Found $(length(open_orders)) open orders to cancel")
-        
-        cancelled_count = 0
-        
-        for (i, order) in enumerate(open_orders)
-            try
-                order_id = string(order.orderId)
-                side = order.side
-                qty = order.origQty
-                price = order.price
-                
-                println("🗑️ [AI SWARM API] Cancelling order $i/$(length(open_orders)): $side $qty @ \$$price (ID: $order_id)")
-                
-                # Cancel each order
-                cancel_params = Dict("symbol" => symbol, "orderId" => order_id)
-                cancel_result = binance_api_request_ai_swarm("/fapi/v1/order", "DELETE", api_key, api_secret, cancel_params)
-                
-                # Check cancellation result safely
-                if isa(cancel_result, Dict) && haskey(cancel_result, "error")
-                    println("❌ [AI SWARM API] Failed to cancel order $order_id: $(cancel_result["error"])")
-                elseif isa(cancel_result, Dict) && (haskey(cancel_result, "orderId") || haskey(cancel_result, "symbol"))
-                    println("✅ [AI SWARM API] Successfully cancelled order $order_id")
-                    cancelled_count += 1
-                else
-                    println("✅ [AI SWARM API] Order $order_id cancellation completed")
-                    cancelled_count += 1  # Assume success if no explicit error
-                end
-                
-                sleep(0.5)  # Small delay between cancellations
-                
-            catch order_error
-                println("❌ [AI SWARM API] Error cancelling individual order: $order_error")
-            end
-        end
-        
-        println("📊 [AI SWARM API] Cancellation Summary: $cancelled_count/$(length(open_orders)) orders cancelled successfully")
-        return cancelled_count
-        
     catch e
         println("❌ [AI SWARM API] Critical error in cancel_all_orders_ai_swarm: $e")
+        println("📍 [AI SWARM API] Full stacktrace: $(sprint(showerror, e, catch_backtrace()))")
         return 0
     end
 end

@@ -330,12 +330,12 @@ function handle_ai_swarm_performance(req::HTTP.Request)
             if isdefined(Agents.Strategies, :GLOBAL_AI_SWARM_PNL_TRACKER)
                 tracker = Agents.Strategies.GLOBAL_AI_SWARM_PNL_TRACKER
                 Dict(
-                    "current_balance_usdt" => get(tracker, :current_balance_usdt, 0.0),
-                    "total_realized_pnl" => get(tracker, :total_realized_pnl, 0.0),
-                    "total_trades" => get(tracker, :total_trades, 0),
-                    "ai_decision_accuracy" => get(tracker, :ai_decision_accuracy, 0.0),
-                    "swarm_consensus_rate" => get(tracker, :swarm_consensus_rate, 0.0),
-                    "max_drawdown" => get(tracker, :max_drawdown, 0.0)
+                    "current_balance_usdt" => tracker.current_balance_usdt,
+                    "total_realized_pnl" => tracker.total_realized_pnl,
+                    "total_trades" => tracker.total_trades,
+                    "ai_decision_accuracy" => tracker.ai_decision_accuracy,
+                    "swarm_consensus_rate" => tracker.swarm_consensus_rate,
+                    "max_drawdown" => tracker.max_drawdown
                 )
             else
                 Dict(
