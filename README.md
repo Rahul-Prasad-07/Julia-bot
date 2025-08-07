@@ -209,13 +209,15 @@ API Response Example (Live System):
    echo "GROQ_API_KEY=your_groq_key" >> .env
    ```
 
-3. **Install Julia Dependencies**
-   ```julia
-   # Open Julia REPL
-   using Pkg
-   Pkg.activate(".")
-   Pkg.instantiate()
-   ```
+3. **Install Julia Dependencies** (Optional)
+  ```julia
+  # Open Julia REPL
+  using Pkg
+  Pkg.activate(".")
+  Pkg.instantiate()
+  ```
+
+You can directly proceed to Method 1 (CLI) or Method 2 (API) below.
 
 ## 🎮 Two Access Methods Available
 
