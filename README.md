@@ -226,6 +226,9 @@ API Response Example (Live System):
    # Navigate to backend directory
    cd backend
    
+   # Start database services
+   docker compose up -d julia-db
+   
    # Launch enhanced market making system
    julia start_enhanced_market_making.jl
    ```
@@ -254,6 +257,9 @@ Select strategy (1-9): 4  # Choose AI Swarm option
    ```bash
    # Navigate to backend directory
    cd backend
+   
+   # Start database services
+   docker compose up -d julia-db
    
    # Start the HTTP server with AI Swarm API endpoints
    julia run_server.jl
