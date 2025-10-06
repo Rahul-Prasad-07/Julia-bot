@@ -1,4 +1,4 @@
-// File: H:\Rahul Prasad 01\bot\Julia-AI-MM-Trading\Julia-bot\apps\web\src\app\page.tsx
+// File: C:\Users\sonis\git\Julia-bot\apps\web\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
